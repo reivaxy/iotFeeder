@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "..\\servoTest"
+		},
+		{
+			"name": "iotFeeder",
+			"path": "."
+		},
+		{
+			"path": "..\\..\\libraries\\XIOTModule"
+		},
+		{
+			"path": "..\\..\\libraries\\XIOTConfig"
+		}
+	],
+	"settings": {}
+}
