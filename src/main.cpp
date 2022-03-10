@@ -15,14 +15,15 @@
 FeederConfigClass *config;
 XIOTModule* module;
 
-int scl = 16;   // D0
-int sda = 14;   // D5
+int scl = 5;   // D1
+int sda = 4;   // D2
 
 void setup() {
   Serial.begin(115200);
   config = new FeederConfigClass((unsigned int)CONFIG_VERSION, (char*)MODULE_NAME);
   config->init();
-  pinMode(0, INPUT);
+  pinMode(0, OUTPUT); digitalWrite(0, HIGH);
+  pinMode(2, OUTPUT); digitalWrite(2, HIGH);
   module = new FeederModule(config, 0x3C, sda, scl);
 }
 

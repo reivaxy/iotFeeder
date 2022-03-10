@@ -8,11 +8,29 @@
 #include "Stepper.h"
 
 Stepper::Stepper() {
-   // AccelStepper stepper(AccelStepper::FULL2WIRE, IN1, IN2);
-   // stepper.setEnablePin(EN);
-   // stepper.setCurrentPosition(0);
-   // stepper.setMaxSpeed(200.0);
-   // stepper.setAcceleration(100.0);
-   // stepper.disableOutputs();
-   // stepCount = 0;
+   stepper = AccelStepper(AccelStepper::FULL2WIRE, IN1, IN2);
+   stepper.setEnablePin(EN);
+   stepper.setCurrentPosition(0);
+   stepper.setMaxSpeed(200.0);
+   stepper.setAcceleration(100.0);
+   stepper.disableOutputs();
+   stepCount = 0;
+}
+
+void Stepper::setStepCount(long count) {
+   stepper.move(count);
+   stepper.enableOutputs();
+}
+
+long Stepper::remaining() {
+   return stepper.distanceToGo();
+}
+
+void Stepper::run() {
+   stepper.run();
+}
+
+void Stepper::stop() {
+   stepper.stop();
+   stepper.disableOutputs();
 }

@@ -8,6 +8,7 @@
 #include "Config.h"
 #include <XIOTModule.h>
 #include "Messages.h"
+#include "Stepper.h"
  
 class FeederModule:public XIOTModule {
 public:
@@ -15,9 +16,11 @@ public:
   
   char* customFormInitPage() override;
   int customSaveConfig() override;
+  void loop() override;
+
+  Stepper stepper;
   FeederConfigClass* _config;
   unsigned long lastTriggerTime = 0;  
 
-  void loop() override;
 
 };

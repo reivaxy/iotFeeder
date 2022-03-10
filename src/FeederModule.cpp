@@ -23,6 +23,7 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
   _oledDisplay->setLineAlignment(2, TEXT_ALIGN_CENTER);
   _config = config;
   lastTriggerTime = 0;
+  stepper = Stepper();
 }
 
 
@@ -61,11 +62,11 @@ int FeederModule::customSaveConfig() {
     prgm->setQuantity((uint16_t)quantity.toInt());
     prgm->setActive(active.equals("on")?true:false);
   }
+  return 0; // ok not very useful. For now.
 }
 
 void FeederModule::loop() {
   XIOTModule::loop();  // takes care of server, display, ...
-
   if(isTimeInitialized()) {
     uint16_t quantity = 0;
     // Only check programs if minute is 0
@@ -84,6 +85,7 @@ void FeederModule::loop() {
             Serial.printf("%s\n", NTP.getTimeDateString(now()).c_str());
             Serial.printf("At hour %d, Quantity: %d\n", h, quantity);
             lastTriggerTime = millis();
+            stepper.setStepCount(quantity);
             break;
           }
         }
@@ -97,6 +99,11 @@ void FeederModule::loop() {
       _config->getProgram(p)->reEnable();     
     }
     lastTriggerTime = 0; // no need to re enable before one program is triggered
+  }
+  if (stepper.remaining()) {
+    stepper.run();
+  } else {
+    stepper.stop();
   }
 }
 
