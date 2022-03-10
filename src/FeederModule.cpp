@@ -6,7 +6,7 @@
  
 #include "FeederModule.h"
  
-FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl):XIOTModule(config, displayAddr, displaySda, displayScl) {
+FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl):XIOTModule(config, displayAddr, displaySda, displayScl, true, 128) {
   _oledDisplay->setLineAlignment(2, TEXT_ALIGN_CENTER);
 }
 
@@ -23,4 +23,12 @@ char* FeederModule::useData(const char* data, int* httpCode) {
 
   *httpCode = 200;
   return emptyMallocedResponse();
+}
+
+const char* FeederModule::customFormInitPage() {
+  return "Some more fields for feeder<br/>";
+}
+
+const char* FeederModule::customPageInitPage() {
+  return "Some more HTML for feeder";
 }

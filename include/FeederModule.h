@@ -16,5 +16,7 @@ protected:
   bool _status = true;  
   char* _customData() override;
   char* useData(const char *, int *) override;
-
+  
+  const char* customFormInitPage() override;
+  const char* customPageInitPage() override;
 };
