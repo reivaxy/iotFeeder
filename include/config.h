@@ -9,20 +9,28 @@
 
 #include <XIOTConfig.h>
 #include <XUtils.h>
+#include "Program.h"
 
 #define CONFIG_VERSION 1
 #define MODULE_NAME "Feeder"
 
+#define PROGRAM_COUNT 6
+
+// Add specific config fields to the generic module config structure
 struct FeederConfigStruct:ModuleConfigStruct {
-  // Add config fields needed if any
+  FeederProgram programs[PROGRAM_COUNT];
 };
+
 
 class FeederConfigClass:public ModuleConfigClass {
 public:
   FeederConfigClass(unsigned int version, const char* name);
-  void initFromDefault();
+  void initFromDefault() override;
   const char* getDefaultUIClassName() override;
+  void saveProgram(Program *program, uint8_t offset);
+  Program* getProgram(uint8_t offset);
 
 protected:
   FeederConfigStruct* _getDataPtr(void);  
+  Program* _programs[PROGRAM_COUNT];
 };

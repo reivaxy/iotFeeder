@@ -5,18 +5,19 @@
  */
  
 #pragma once 
-#include "config.h"
+#include "Config.h"
 #include <XIOTModule.h>
+#include "Messages.h"
  
 class FeederModule:public XIOTModule {
 public:
   FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl);
   
-protected:
-  bool _status = true;  
-  char* _customData() override;
-  char* useData(const char *, int *) override;
-  
-  const char* customFormInitPage() override;
-  const char* customPageInitPage() override;
+  char* customFormInitPage() override;
+  int customSaveConfig() override;
+  FeederConfigClass* _config;
+  unsigned long lastTriggerTime = 0;  
+
+  void loop() override;
+
 };
