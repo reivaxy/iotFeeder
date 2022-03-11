@@ -10,7 +10,7 @@
 #define QUANTITY_PARAM_NAME "p_q_%d"
 #define ACTIVE_PARAM_NAME "p_a_%d"
  
-#define RESET_DELAY_MS 15*60*1000 // 15 mn in milliseconds
+#define RESET_DELAY_MS 1*60*1000 // in milliseconds
 
 // not in header to keep it near usage 
 char formTemplate[] = "<hr>\
@@ -24,8 +24,23 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
   _config = config;
   lastTriggerTime = 0;
   stepper = Stepper();
+  initMsgSchedule();
+  _oledDisplay->setLineAlignment(1, TEXT_ALIGN_CENTER);
+  _oledDisplay->setLineAlignment(3, TEXT_ALIGN_CENTER);
 }
 
+void FeederModule::initMsgSchedule() {
+  *messageSchedule = 0;
+  char one[4];
+  for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
+    Program *prgm = _config->getProgram(p);
+    if (prgm->isActive()) {
+      sprintf(one, "%02d ", prgm->getHour());
+      strcat(messageSchedule, one);
+    }
+  }
+  _oledDisplay->setLine(1, messageSchedule);
+}
 
 char* FeederModule::customFormInitPage() {
   int maxSize = PROGRAM_COUNT * (strlen(formTemplate) + 15) ;  
@@ -62,6 +77,8 @@ int FeederModule::customSaveConfig() {
     prgm->setQuantity((uint16_t)quantity.toInt());
     prgm->setActive(active.equals("on")?true:false);
   }
+
+  initMsgSchedule();
   return 0; // ok not very useful. For now.
 }
 
@@ -75,15 +92,18 @@ void FeederModule::loop() {
       int s = second();
       // Only check programs during the first 10 seconds of each hour
       // This is a security in case the esp restarts while dispensing food, we don't want to dispense it again.
-      // The delay should be at least the one needed to obtain time from NTP
-      // When a program triggers, it disables itself to not trigger again until re enabled
+      // The delay should be at most the one needed to obtain time from NTP after a restart
+      // When a program triggers, it disables itself to not trigger again, until re enabled
       if (s < 10) {
         uint8_t h = (uint8_t)hour();
         for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
           quantity = _config->getProgram(p)->triggerQuantity(h);        
           if (quantity != 0) {
             Serial.printf("%s\n", NTP.getTimeDateString(now()).c_str());
-            Serial.printf("At hour %d, Quantity: %d\n", h, quantity);
+            char message[50];
+            sprintf(message, "At %d:00, Qtity: %d\n", h, quantity);
+            Serial.printf(message);
+            _oledDisplay->setLine(2, message);
             lastTriggerTime = millis();
             stepper.setStepCount(quantity);
             break;
@@ -92,6 +112,7 @@ void FeederModule::loop() {
       }
     } 
   } 
+  
   // Re enable programs after some delay since last program triggered and disabled itself
   if (lastTriggerTime != 0 && XUtils::isElapsedDelay(millis(), &lastTriggerTime, RESET_DELAY_MS)) {
     Serial.println("Re-enabling programs");

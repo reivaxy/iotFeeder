@@ -17,10 +17,12 @@ public:
   char* customFormInitPage() override;
   int customSaveConfig() override;
   void loop() override;
+  void initMsgSchedule();
 
   Stepper stepper;
   FeederConfigClass* _config;
   unsigned long lastTriggerTime = 0;  
 
+  char messageSchedule[40];
 
 };

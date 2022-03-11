@@ -1,9 +1,6 @@
 {
 	"folders": [
 		{
-			"path": "..\\servoTest"
-		},
-		{
 			"name": "iotFeeder",
 			"path": "."
 		},
@@ -12,6 +9,12 @@
 		},
 		{
 			"path": "..\\..\\libraries\\XIOTConfig"
+		},
+		{
+			"path": "..\\iotSwitch"
+		},
+		{
+			"path": "..\\StepperTests"
 		}
 	],
 	"settings": {}
