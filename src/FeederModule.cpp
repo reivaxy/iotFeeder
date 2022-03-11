@@ -19,7 +19,9 @@ char formTemplate[] = "<hr>\
 " MSG_INIT_ACTIVE " <input name='" ACTIVE_PARAM_NAME "' type='checkbox' %s/></br>\
 ";
 
-FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl):XIOTModule(config, displayAddr, displaySda, displayScl, true, 255) {
+FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl, int in):XIOTModule(config, displayAddr, displaySda, displayScl, true, 255) {
+  pinMode(in, INPUT);
+  _inPin = in;
   _oledDisplay->setLineAlignment(2, TEXT_ALIGN_CENTER);
   _config = config;
   lastTriggerTime = 0;
@@ -27,6 +29,7 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
   initMsgSchedule();
   _oledDisplay->setLineAlignment(1, TEXT_ALIGN_CENTER);
   _oledDisplay->setLineAlignment(3, TEXT_ALIGN_CENTER);
+  _oledDisplay->setTransientDuration(2, 30000);  // List to display step count at end of test session
 }
 
 void FeederModule::initMsgSchedule() {
@@ -125,6 +128,25 @@ void FeederModule::loop() {
     stepper.run();
   } else {
     stepper.stop();
+  }
+
+  int level = digitalRead(_inPin);
+  if (level == HIGH) {
+    if (_testSession) {
+      return;
+    } else {
+      _testSession = true;
+      stepper.setStepCount(5000);
+    }
+  } else {
+    if (_testSession) {
+      _testSession = false;
+      long stepCount = 5000 - stepper.remaining();
+      stepper.stop();
+      char message[40];
+      sprintf(message, "Step Count: %d\n", stepCount);      
+      _oledDisplay->setLine(2, message, true, false, true);
+    }
   }
 }
 

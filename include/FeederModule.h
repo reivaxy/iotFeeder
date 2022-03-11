@@ -12,7 +12,7 @@
  
 class FeederModule:public XIOTModule {
 public:
-  FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl);
+  FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl, int inPin);
   
   char* customFormInitPage() override;
   int customSaveConfig() override;
@@ -24,5 +24,7 @@ public:
   unsigned long lastTriggerTime = 0;  
 
   char messageSchedule[40];
+  int _inPin;
+  bool _testSession = false;
 
 };
