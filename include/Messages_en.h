@@ -9,3 +9,4 @@
 #define MSG_INIT_HOUR "Hour"
 #define MSG_INIT_QUANTITY "Quantity"
 #define MSG_INIT_ACTIVE "Active"
+#define MSG_SETINGS_WELCOME "Feeder Settings"

@@ -9,5 +9,6 @@
 #define MSG_INIT_HOUR "Heure"
 #define MSG_INIT_QUANTITY "Quantite"
 #define MSG_INIT_ACTIVE "Actif"
+#define MSG_SETINGS_WELCOME "Reglages Feeder"
 
 

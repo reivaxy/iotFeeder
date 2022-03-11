@@ -14,10 +14,10 @@ class FeederModule:public XIOTModule {
 public:
   FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl, int inPin);
   
-  char* customFormInitPage() override;
-  int customSaveConfig() override;
   void loop() override;
   void initMsgSchedule();
+  void settingsPage();
+  void saveSettings();
 
   Stepper stepper;
   FeederConfigClass* _config;

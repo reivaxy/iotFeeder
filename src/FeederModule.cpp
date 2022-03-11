@@ -11,13 +11,7 @@
 #define ACTIVE_PARAM_NAME "p_a_%d"
  
 #define RESET_DELAY_MS 1*60*1000 // in milliseconds
-
-// not in header to keep it near usage 
-char formTemplate[] = "<hr>\
-" MSG_INIT_HOUR " <input name='" HOUR_PARAM_NAME "' value='%d' type='number' min=0 max=23 size=4/></br>\
-" MSG_INIT_QUANTITY " <input name='" QUANTITY_PARAM_NAME "' value='%d' type='number' min=0 max=5000 size=4/></br>\
-" MSG_INIT_ACTIVE " <input name='" ACTIVE_PARAM_NAME "' type='checkbox' %s/></br>\
-";
+#include "settingsPageHtml.h"
 
 FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl, int in):XIOTModule(config, displayAddr, displaySda, displayScl, true, 255) {
   pinMode(in, INPUT);
@@ -30,6 +24,12 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
   _oledDisplay->setLineAlignment(1, TEXT_ALIGN_CENTER);
   _oledDisplay->setLineAlignment(3, TEXT_ALIGN_CENTER);
   _oledDisplay->setTransientDuration(2, 30000);  // List to display step count at end of test session
+  _server->on("/feederApi/saveSettings", HTTP_POST, [&]() {
+    saveSettings();
+  });
+  _server->on("/", HTTP_GET, [&]() {
+    settingsPage();
+  });
 }
 
 void FeederModule::initMsgSchedule() {
@@ -45,11 +45,12 @@ void FeederModule::initMsgSchedule() {
   _oledDisplay->setLine(1, messageSchedule);
 }
 
-char* FeederModule::customFormInitPage() {
-  int maxSize = PROGRAM_COUNT * (strlen(formTemplate) + 15) ;  
+void FeederModule::settingsPage() {
+  int maxSize = strlen(settingsBeginingPage) + strlen(settingsEndingPage) + PROGRAM_COUNT * (strlen(formTemplate) + 15) ;  
   Serial.printf("Size %d\n", maxSize);
   char* result = (char*)malloc(maxSize); // caller will free it
-  char *resultPtr = result;
+  strcpy(result, settingsBeginingPage);
+  char *resultPtr = result + strlen(result);
   for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
     Program *prgm = _config->getProgram(p);
     sprintf(resultPtr, formTemplate, p, prgm->getHour(),
@@ -57,16 +58,17 @@ char* FeederModule::customFormInitPage() {
                                     p, prgm->isActive()?"checked":"");
     resultPtr = result + strlen(result);
   }
-  *resultPtr = 0;
-  return result;
+  strcat(result, settingsEndingPage);
+  sendHtml(result, 200);
+  free(result);
 }
 
-int FeederModule::customSaveConfig() {
+void FeederModule::saveSettings() {
   // sizing param names for PROGRAM_COUNT < 100
   char hourParamName[7];
   char quantityParamName[7];
   char activeParamName[7];
-  for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
+  for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) { 
     sprintf(hourParamName, HOUR_PARAM_NAME, p);
     sprintf(quantityParamName, QUANTITY_PARAM_NAME, p);
     sprintf(activeParamName, ACTIVE_PARAM_NAME, p);
@@ -80,9 +82,7 @@ int FeederModule::customSaveConfig() {
     prgm->setQuantity((uint16_t)quantity.toInt());
     prgm->setActive(active.equals("on")?true:false);
   }
-
   initMsgSchedule();
-  return 0; // ok not very useful. For now.
 }
 
 void FeederModule::loop() {
@@ -144,7 +144,7 @@ void FeederModule::loop() {
       long stepCount = 5000 - stepper.remaining();
       stepper.stop();
       char message[40];
-      sprintf(message, "Step Count: %d\n", stepCount);      
+      sprintf(message, "Quantity: %d\n", stepCount);      
       _oledDisplay->setLine(2, message, true, false, true);
     }
   }
