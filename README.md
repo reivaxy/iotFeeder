@@ -22,4 +22,4 @@ The 3D design is using an Archimedes' screw:
 <img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/3DDesign.png?raw=true" width="512px"/>
 
 
-In the works: A second push button to make the motor go backwards by a few steps in case something gets stuck (I had this issue once with big pellets), and a vibrating device to shake down the tiny pellets that sometimes tend to clog and stop falling down the well.
+In the works: A small vibrating device to shake down the tiny pellets that sometimes tend to clog and stop falling down the well.
