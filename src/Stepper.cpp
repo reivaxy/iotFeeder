@@ -32,5 +32,6 @@ void Stepper::run() {
 
 void Stepper::stop() {
    stepper.stop();
+   stepper.setCurrentPosition(0);
    stepper.disableOutputs();
 }

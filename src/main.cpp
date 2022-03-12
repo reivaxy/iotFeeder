@@ -17,7 +17,9 @@ XIOTModule* module;
 
 int scl = 5;   // D1
 int sda = 4;   // D2
-int in = 16;   // D0
+int forwardPin = 16;   // D0
+
+int reversePin = 15;  // Will be 9 with custom PCB, but not accessible on prototype
 
 void setup() {
   Serial.begin(115200);
@@ -26,7 +28,7 @@ void setup() {
   // to avoid side effects when these pins are not connected.
   pinMode(0, OUTPUT); digitalWrite(0, HIGH);
   pinMode(2, OUTPUT); digitalWrite(2, HIGH);
-  module = new FeederModule(config, 0x3C, sda, scl, in);
+  module = new FeederModule(config, 0x3C, sda, scl, forwardPin, reversePin);
 }
 
 void loop() {

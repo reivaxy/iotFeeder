@@ -13,9 +13,12 @@
 #define RESET_DELAY_MS 1*60*1000 // in milliseconds
 #include "settingsPageHtml.h"
 
-FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl, int in):XIOTModule(config, displayAddr, displaySda, displayScl, true, 255) {
-  pinMode(in, INPUT);
-  _inPin = in;
+FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, 
+                            int displayScl, int forwardPin, int reversePin):XIOTModule(config, displayAddr, displaySda, displayScl, true, 255) {
+  pinMode(forwardPin, INPUT);
+  pinMode(reversePin, INPUT);
+  _forwardPin = forwardPin;
+  _reversePin = reversePin;
   _oledDisplay->setLineAlignment(2, TEXT_ALIGN_CENTER);
   _config = config;
   lastTriggerTime = 0;
@@ -89,6 +92,8 @@ void FeederModule::saveSettings() {
 
 void FeederModule::loop() {
   XIOTModule::loop();  // takes care of server, display, ...
+
+  // Check programs and trigger stepper if necessary
   if(isTimeInitialized()) {
     uint16_t quantity = 0;
     // Only check programs if minute is 0
@@ -132,8 +137,9 @@ void FeederModule::loop() {
     stepper.stop();
   }
 
-  int level = digitalRead(_inPin);
-  if (level == HIGH) {
+  // Check the "move forward" button, and move forward accordingly
+  int pushForward = digitalRead(_forwardPin);
+  if (pushForward == HIGH) {
     if (_testSession) {
       return;
     } else {
@@ -150,5 +156,15 @@ void FeederModule::loop() {
       _oledDisplay->setLine(2, message, true, false, true);
     }
   }
+
+  // Check the "move back" button, and move back by a small step quantity if necessary
+  int pushReverse = digitalRead(_reversePin);
+  if (pushReverse == HIGH) {
+    if (XUtils::isElapsedDelay(millis(), &lastReverseTime, 2000)) {
+      lastReverseTime = millis();
+      stepper.setStepCount(-40);    
+    }
+  }
+
 }
 

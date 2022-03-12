@@ -12,7 +12,7 @@
  
 class FeederModule:public XIOTModule {
 public:
-  FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl, int inPin);
+  FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl, int forwardPin, int reversePin);
   
   void loop() override;
   void initMsgSchedule();
@@ -22,9 +22,12 @@ public:
   Stepper stepper;
   FeederConfigClass* _config;
   unsigned long lastTriggerTime = 0;  
+  unsigned long lastReverseTime = 0;  
 
   char messageSchedule[40];
-  int _inPin;
+  int _forwardPin;
+  int _reversePin;
+
   bool _testSession = false;
 
 };
