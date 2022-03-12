@@ -19,9 +19,9 @@ public:
    void stop();
    void run();
 
-   int IN1 = 12;   // D6
-   int IN2 = 13;   // D7
-   int EN = 15;    // D8
+   int IN1 = 13; 
+   int IN2 = 12; 
+   int EN = 14;  
 
    uint16_t stepCount = 0;
    AccelStepper stepper;

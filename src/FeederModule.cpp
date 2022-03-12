@@ -82,6 +82,8 @@ void FeederModule::saveSettings() {
     prgm->setQuantity((uint16_t)quantity.toInt());
     prgm->setActive(active.equals("on")?true:false);
   }
+  _config->saveToEeprom();
+  sendHtml("Config saved", 200);
   initMsgSchedule();
 }
 

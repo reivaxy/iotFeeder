@@ -17,7 +17,7 @@ XIOTModule* module;
 
 int scl = 5;   // D1
 int sda = 4;   // D2
-int in = 14;   // D5
+int in = 16;   // D0
 
 void setup() {
   Serial.begin(115200);
