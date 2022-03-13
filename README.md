@@ -23,7 +23,7 @@ The 3D design is using an Archimedes' screw:
 
 Here it as demo with the prototype:
 
-https://youtu.be/yFvs3U7yZLo
+https://youtu.be/9wqxyTTBjuU
 
 ## COMPONENTS NEEDED
 
