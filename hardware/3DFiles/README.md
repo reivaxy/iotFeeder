@@ -14,3 +14,7 @@ Here is a printing positioning suggestion:
 
 <img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/3Dprinting.png?raw=true" width="512px"/>
 
+I printed the prototype with PLA, and 0.2 mm layers.
+
+
+
