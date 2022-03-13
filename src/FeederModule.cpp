@@ -14,7 +14,7 @@
 #include "settingsPageHtml.h"
 
 FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, 
-                            int displayScl, int forwardPin, int reversePin):XIOTModule(config, displayAddr, displaySda, displayScl, true, 255) {
+                            int displayScl, int forwardPin, int reversePin):XIOTModule(config, displayAddr, displaySda, displayScl, false, 255) {
   pinMode(forwardPin, INPUT);
   pinMode(reversePin, INPUT);
   _forwardPin = forwardPin;

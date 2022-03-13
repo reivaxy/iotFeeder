@@ -1,9 +1,9 @@
 # iotFeeder
 Fish feeder using ESP8266, a stepper motor and an oled screen.
 
-This is a module of the Iotinator framework (https://github.com/reivaxy/iotinator), which can also work autonomously (no master to connect to).
+This will be a module of the Iotinator framework (https://github.com/reivaxy/iotinator), which can already work autonomously (no master module is needed).
 
-It's using cheap and widely available components (each under $4), and a 3D printed case.
+It's using cheap and widely available components (each under $4), a 3D printed case, and an optional PCB.
 
 The ESP8266 allows some WiFi access for setting the feeding times and quantities, as well as OTA firmware upgrade, the tiny Oled screen displays what's going on, and one push button helps calibrating the quantities as well as manually treat your little fishes when they deserve it.
 
@@ -19,17 +19,17 @@ Here is a working prototype:
 
 The 3D design is using an Archimedes' screw:
 
-<img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/3DDesign.png?raw=true" width="512px"/>
+<img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/3DDesign.jpg?raw=true" width="512px"/>
 
-Here it as demo with the prototype:
+Here is a short demo with the prototype showing the configuration page, then the Oled screen, then the dispensing of one programmed serving.
 
 https://youtu.be/9wqxyTTBjuU
 
 ## COMPONENTS NEEDED
 
-I've used this stepper driver board:
+I've used this stepper driver board but I guess others should work:
 
-<img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/driver.jpg?raw=true" width="100px"/>
+<img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/driver.jpg?raw=true" width="200px"/>
 
 https://www.ebay.com/itm/263017459366
 
@@ -39,9 +39,9 @@ This driver board was obviously not intended to be mounted on proto board but if
 
 I might end up designing another PCB with an SMD MPF10S equivalent and the few discreete components needed to get rid of the driver board.
 
-I've used this stepper:
+I've used this stepper, so the case is designed to accomodate it, but since it's mounted on an [independant plate](https://github.com/reivaxy/iotFeeder/blob/master/hardware/3DFiles/stepperPlate.stl), adaptation to another stepper could be easy if within the overall dimensions.
 
-<img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/stepper.jpg?raw=true" width="100px"/>
+<img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/stepper.jpg?raw=true" width="200px"/>
 
 https://www.ebay.com/itm/262537288016
 
@@ -52,11 +52,11 @@ Other components easy to find anywhere:
 
 1 x LM1117 regulator (the stepper is 6V, the ESP 3.3V)
 
-1 x Oled 0.96inch white pixels (the blue and yellow option does not age as well, and be careful with the power pins, some are reversed)
+1 x Oled 0.96inch white pixels (the split blue & yellow screen does not age as well, and be careful with the power pins, some are reversed)
 
-2 x push buttons (can be mounted on the PCB or wired)
+2 x push buttons (can be mounted on the [PCB](hardware/PCB) or wired)
 
-3 x 22k resistors (SMD 0806 i fyou use the PCB)
+3 x 22k resistors (SMD 0806 if you use the [PCB](hardware/PCB))
 
 1 x 6V power unit. The module needs about 500mA at peak when stepper starts, 100mA when idle 
 
@@ -64,4 +64,11 @@ Other components easy to find anywhere:
 
 2 x 6800ZZ bearings
 
+2 hex bolts m3x16 to mount the stepper on the stepper plate
+
+8 Philips self tapping flat head screws m2x12 : 
+- 4 to attach the stepper plate to the case
+- 4 to attach the back panel to the case
+
+ 
 About 160g of PLA filament.
