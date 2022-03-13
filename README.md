@@ -21,8 +21,9 @@ The 3D design is using an Archimedes' screw:
 
 <img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/3DDesign.png?raw=true" width="512px"/>
 
-In the works: A small vibrating device to shake down the tiny pellets that sometimes tend to clog and stop falling down the well especially when tank is near empty.
+Here it as demo with the prototype:
 
+https://youtu.be/yFvs3U7yZLo
 
 ## COMPONENTS NEEDED
 
