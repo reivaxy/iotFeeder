@@ -33,7 +33,7 @@ I've used this stepper driver board:
 
 https://www.ebay.com/itm/263017459366
 
-To use them with the [PCB available here](hardware/PCB), you will need to unsolder the headers and solder them on the other side of the drier PCB, which is not ideal. 
+To use them with the [PCB available here](hardware/PCB), you will need to unsolder the headers and solder them on the other side of the driver PCB, which is not ideal. 
 
 This driver board was obviously not intended to be mounted on proto board but if you push hard enough, it fits :)
 
@@ -56,9 +56,11 @@ Other components easy to find anywhere:
 
 2 x push buttons (can be mounted on the PCB or wired)
 
-3 x 22k resistors (SMD 0608 i fyou use the PCB)
+3 x 22k resistors (SMD 0806 i fyou use the PCB)
 
 1 x 6V power unit. The module needs about 500mA at peak when stepper starts, 100mA when idle 
+
+1 x power jack socket
 
 2 x 6800ZZ bearings
 
