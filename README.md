@@ -48,7 +48,7 @@ https://www.ebay.com/itm/262537288016
 
 Other components easy to find anywhere:
 
-1 x ESP12
+1 x ESP12 but it also works on a D1_mini or node MCU.
 
 1 x LM1117 regulator (the stepper is 6V, the ESP 3.3V)
 
