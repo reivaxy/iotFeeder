@@ -5,16 +5,10 @@
 			"path": "."
 		},
 		{
+			"path": "..\\e-nableHandWearMonitor\\handMonitor"
+		},
+		{
 			"path": "..\\..\\libraries\\XIOTModule"
-		},
-		{
-			"path": "..\\..\\libraries\\XIOTConfig"
-		},
-		{
-			"path": "..\\iotSwitch"
-		},
-		{
-			"path": "..\\StepperTests"
 		}
 	],
 	"settings": {}

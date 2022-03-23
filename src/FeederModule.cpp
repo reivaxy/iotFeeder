@@ -153,9 +153,10 @@ void FeederModule::loop() {
     _previousLevel = level;  
   } else {
     stepper.stop();
-    if (mustWarnNoFoodDetected) {
+    if (mustWarnNoFoodDetected && !_manualReverse) {
       Serial.printf("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str());    
     }
+    _manualReverse = false;
     mustWarnNoFoodDetected = false;
   }
 
@@ -188,8 +189,6 @@ void FeederModule::loop() {
       lastReverseTime = millis();
       stepper.start(-40);    
     }
-  } else {
-    _manualReverse = false;
   }
 
 }
