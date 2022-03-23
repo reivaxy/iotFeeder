@@ -15,11 +15,10 @@
 FeederConfigClass *config;
 XIOTModule* module;
 
-int scl = 5;   // D1
-int sda = 4;   // D2
-int forwardPin = 16;   // D0
-
-int reversePin = 15;  // Will be 9 with custom PCB, but not accessible on prototype
+int scl = 5; 
+int sda = 4; 
+int forwardPin = 16; 
+int reversePin = 15;  
 
 void setup() {
   Serial.begin(115200);

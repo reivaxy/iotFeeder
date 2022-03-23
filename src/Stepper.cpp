@@ -17,7 +17,8 @@ Stepper::Stepper() {
    stepCount = 0;
 }
 
-void Stepper::setStepCount(long count) {
+void Stepper::start(long count) {
+   firstStep = true;
    stepper.move(count);
    stepper.enableOutputs();
 }
@@ -27,7 +28,12 @@ long Stepper::remaining() {
 }
 
 void Stepper::run() {
+   firstStep = false;
    stepper.run();
+}
+
+boolean Stepper::isFirstStep() {
+   return firstStep;
 }
 
 void Stepper::stop() {

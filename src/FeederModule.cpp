@@ -13,10 +13,13 @@
 #define RESET_DELAY_MS 1*60*1000 // in milliseconds
 #include "settingsPageHtml.h"
 
+#define IR_IN  A0
+
 FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, 
                             int displayScl, int forwardPin, int reversePin):XIOTModule(config, displayAddr, displaySda, displayScl, false, 255) {
   pinMode(forwardPin, INPUT);
   pinMode(reversePin, INPUT);
+
   _forwardPin = forwardPin;
   _reversePin = reversePin;
   _oledDisplay->setLineAlignment(2, TEXT_ALIGN_CENTER);
@@ -115,7 +118,9 @@ void FeederModule::loop() {
             Serial.printf(message);
             _oledDisplay->setLine(2, message);
             lastTriggerTime = millis();
-            stepper.setStepCount(quantity);
+            // Activate the stepper
+            // This also powers up the IR detector since it's plugged to the EN pin
+            stepper.start(quantity);
             break;
           }
         }
@@ -131,24 +136,42 @@ void FeederModule::loop() {
     }
     lastTriggerTime = 0; // no need to re enable before one program is triggered
   }
+
   if (stepper.remaining()) {
+    // this test needs to be done before calling "stepper.run" since it will reset the firstStep flag
+    if (stepper.isFirstStep()) {
+      mustWarnNoFoodDetected = true;
+    }
     stepper.run();
+    int level = analogRead(IR_IN)/10;                                                                                                                   
+    if (abs(_previousLevel - level) > 3) {
+      if (_previousLevel != -1 && isTimeInitialized()) {
+        //Serial.printf("%s IR Detection ! %d\n", NTP.getTimeDateString(now()).c_str(),  level);    
+        mustWarnNoFoodDetected = false;
+      }
+    }
+    _previousLevel = level;  
   } else {
     stepper.stop();
+    if (mustWarnNoFoodDetected) {
+      Serial.printf("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str());    
+    }
+    mustWarnNoFoodDetected = false;
   }
+
 
   // Check the "move forward" button, and move forward accordingly
   int pushForward = digitalRead(_forwardPin);
   if (pushForward == HIGH) {
-    if (_testSession) {
-      return;
-    } else {
-      _testSession = true;
-      stepper.setStepCount(5000);
+    if (!_manualForward) {
+      _manualForward = true;
+      // Activate the stepper
+      // This also powers up the IR detector since it's plugged to the EN pin
+      stepper.start(5000);
     }
   } else {
-    if (_testSession) {
-      _testSession = false;
+    if (_manualForward) {
+      _manualForward = false;
       long stepCount = 5000 - stepper.remaining();
       stepper.stop();
       char message[40];
@@ -160,10 +183,13 @@ void FeederModule::loop() {
   // Check the "move back" button, and move back by a small step quantity if necessary
   int pushReverse = digitalRead(_reversePin);
   if (pushReverse == HIGH) {
+    _manualReverse = true;
     if (XUtils::isElapsedDelay(millis(), &lastReverseTime, 2000)) {
       lastReverseTime = millis();
-      stepper.setStepCount(-40);    
+      stepper.start(-40);    
     }
+  } else {
+    _manualReverse = false;
   }
 
 }

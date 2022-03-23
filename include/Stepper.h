@@ -14,10 +14,11 @@
 class Stepper {
 public:
    Stepper();
-   void setStepCount(long count);
+   void start(long count);
    long remaining();
    void stop();
    void run();
+   boolean isFirstStep();
 
    int IN1 = 13; 
    int IN2 = 12; 
@@ -25,5 +26,6 @@ public:
 
    uint16_t stepCount = 0;
    AccelStepper stepper;
+   boolean firstStep = false;
 
 };

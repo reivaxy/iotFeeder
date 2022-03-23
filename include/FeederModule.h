@@ -28,6 +28,11 @@ public:
   int _forwardPin;
   int _reversePin;
 
-  bool _testSession = false;
+  int _previousLevel = -1;
+
+  bool _manualForward = false;
+  bool _manualReverse = false;
+
+  bool mustWarnNoFoodDetected = false;
 
 };
