@@ -74,6 +74,8 @@ void FeederModule::saveSettings() {
   char hourParamName[7];
   char quantityParamName[7];
   char activeParamName[7];
+  Program *prgms[PROGRAM_COUNT];
+  FeederProgram fprgms[PROGRAM_COUNT];
   for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) { 
     sprintf(hourParamName, HOUR_PARAM_NAME, p);
     sprintf(quantityParamName, QUANTITY_PARAM_NAME, p);
@@ -81,14 +83,27 @@ void FeederModule::saveSettings() {
     String hour = _server->arg(hourParamName);
     String quantity = _server->arg(quantityParamName);
     String active = _server->arg(activeParamName);
-
-    //Serial.printf("p%d Hour %s Qtity %s Active %s\n", p, hour.c_str(), quantity.c_str(), active.c_str());
-    Program *prgm = _config->getProgram(p);
+    Program* prgm = new Program(&fprgms[p]);
     prgm->setHour((uint8_t)hour.toInt());
     prgm->setQuantity((uint16_t)quantity.toInt());
     prgm->setActive(active.equals("on")?true:false);
+    prgms[p] = prgm;
+    //Serial.printf("p%d Hour %s Qtity %s Active %s\n", p, hour.c_str(), quantity.c_str(), active.c_str());
   }
+  std::sort(&prgms[0], &prgms[PROGRAM_COUNT], [](Program* a, Program* b) {
+    return a->getHour() < b->getHour();
+  });
+
+  for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) { 
+    Program *prgm = _config->getProgram(p);
+    prgm->setHour(prgms[p]->getHour());
+    prgm->setQuantity(prgms[p]->getQuantity());
+    prgm->setActive(prgms[p]->isActive());    
+    delete prgms[p];
+  }
+  uint32_t freeMem = system_get_free_heap_size();
   _config->saveToEeprom();
+  Serial.printf("%s Heap after sorting programs: %d\n", NTP.getTimeDateString().c_str(), freeMem);   
   sendHtml("Config saved", 200);
   initMsgSchedule();
 }
@@ -155,6 +170,7 @@ void FeederModule::loop() {
     stepper.stop();
     if (mustWarnNoFoodDetected && !_manualReverse) {
       Serial.printf("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str());    
+      sendPushNotif(_config->getName(), "No food was dispensed");
     }
     _manualReverse = false;
     mustWarnNoFoodDetected = false;
@@ -176,7 +192,7 @@ void FeederModule::loop() {
       long stepCount = 5000 - stepper.remaining();
       stepper.stop();
       char message[40];
-      sprintf(message, "Quantity: %d\n", stepCount);      
+      sprintf(message, "Quantity: %ld\n", stepCount);      
       _oledDisplay->setLine(2, message, true, false, true);
     }
   }
