@@ -18,6 +18,7 @@ public:
   void initMsgSchedule();
   void settingsPage();
   void saveSettings();
+  void logProgramedDispensing(uint16_t quantity);
 
   Stepper stepper;
   FeederConfigClass* _config;

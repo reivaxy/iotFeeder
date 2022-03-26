@@ -7,4 +7,8 @@
  
 #pragma once
 
+#if XIOT_LANGUAGE == fr
+#include "Messages_fr.h"
+#else
 #include "Messages_en.h"
+#endif

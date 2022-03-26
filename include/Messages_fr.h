@@ -7,8 +7,8 @@
 #pragma once
 
 #define MSG_INIT_HOUR "Heure"
-#define MSG_INIT_QUANTITY "Quantite"
+#define MSG_INIT_QUANTITY "Quantité"
 #define MSG_INIT_ACTIVE "Actif"
-#define MSG_SETINGS_WELCOME "Reglages Feeder"
-
+#define MSG_SETINGS_WELCOME "Réglages Feeder"
+#define MSG_NO_FOOD "Nourriture non distribuée"
 

@@ -10,3 +10,4 @@
 #define MSG_INIT_QUANTITY "Quantity"
 #define MSG_INIT_ACTIVE "Active"
 #define MSG_SETINGS_WELCOME "Feeder Settings"
+#define MSG_NO_FOOD "No food dispensed"

@@ -5,10 +5,19 @@
 			"path": "."
 		},
 		{
-			"path": "..\\e-nableHandWearMonitor\\handMonitor"
+			"path": "..\\..\\libraries\\XIOTModule"
 		},
 		{
-			"path": "..\\..\\libraries\\XIOTModule"
+			"path": "..\\..\\libraries\\XIOTConfig"
+		},
+		{
+			"path": "..\\iotinator\\iotinator"
+		},
+		{
+			"path": "..\\GarageWeek2021"
+		},
+		{
+			"path": "..\\iotSwitch"
 		}
 	],
 	"settings": {}

@@ -19,7 +19,7 @@ a{right:40px;position:absolute;text-decoration:none}\
 </style>\
 </head>\
 <body>\
-<h1>" MSG_SETINGS_WELCOME "<a href='/config'>⚙</a></h1>\
+<h3>" MSG_SETINGS_WELCOME "<a href='/config'>⚙</a></h3>\
 <form action='/feederApi/saveSettings' method='post'>\
 ";
 

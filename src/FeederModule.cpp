@@ -10,6 +10,7 @@
 #define QUANTITY_PARAM_NAME "p_q_%d"
 #define ACTIVE_PARAM_NAME "p_a_%d"
  
+ #define MANUAL_STEP_COUNT 10000
 #define RESET_DELAY_MS 1*60*1000 // in milliseconds
 #include "settingsPageHtml.h"
 
@@ -54,7 +55,7 @@ void FeederModule::initMsgSchedule() {
 void FeederModule::settingsPage() {
   int maxSize = strlen(settingsBeginingPage) + strlen(settingsEndingPage) + PROGRAM_COUNT * (strlen(formTemplate) + 15) ;  
   Serial.printf("Size %d\n", maxSize);
-  char* result = (char*)malloc(maxSize); // caller will free it
+  char* result = (char*)malloc(maxSize);
   strcpy(result, settingsBeginingPage);
   char *resultPtr = result + strlen(result);
   for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
@@ -70,6 +71,8 @@ void FeederModule::settingsPage() {
 }
 
 void FeederModule::saveSettings() {
+  uint32_t freeMem = system_get_free_heap_size();
+  Serial.printf("%s Heap before sorting programs: %d\n", NTP.getTimeDateString().c_str(), freeMem); 
   // sizing param names for PROGRAM_COUNT < 100
   char hourParamName[7];
   char quantityParamName[7];
@@ -101,11 +104,15 @@ void FeederModule::saveSettings() {
     prgm->setActive(prgms[p]->isActive());    
     delete prgms[p];
   }
-  uint32_t freeMem = system_get_free_heap_size();
   _config->saveToEeprom();
+  freeMem = system_get_free_heap_size();
   Serial.printf("%s Heap after sorting programs: %d\n", NTP.getTimeDateString().c_str(), freeMem);   
   sendHtml("Config saved", 200);
   initMsgSchedule();
+}
+
+void FeederModule::logProgramedDispensing(uint16_t quantity) {
+
 }
 
 void FeederModule::loop() {
@@ -136,6 +143,10 @@ void FeederModule::loop() {
             // Activate the stepper
             // This also powers up the IR detector since it's plugged to the EN pin
             stepper.start(quantity);
+            // logProgramedDispensing(quantity);
+            char log[50];
+            sprintf(log, "Automatic dispensing quantity %d", quantity);
+            firebase->sendLog(log);
             break;
           }
         }
@@ -170,7 +181,8 @@ void FeederModule::loop() {
     stepper.stop();
     if (mustWarnNoFoodDetected && !_manualReverse) {
       Serial.printf("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str());    
-      sendPushNotif(_config->getName(), "No food was dispensed");
+      sendPushNotif(_config->getName(), MSG_NO_FOOD);
+      firebase->sendAlert("Dispensing failure");
     }
     _manualReverse = false;
     mustWarnNoFoodDetected = false;
@@ -182,18 +194,21 @@ void FeederModule::loop() {
   if (pushForward == HIGH) {
     if (!_manualForward) {
       _manualForward = true;
-      // Activate the stepper
+      // Activate the stepper for a big step count, it will be stopped when button is released
       // This also powers up the IR detector since it's plugged to the EN pin
-      stepper.start(5000);
+      stepper.start(MANUAL_STEP_COUNT);
     }
   } else {
     if (_manualForward) {
       _manualForward = false;
-      long stepCount = 5000 - stepper.remaining();
+      long stepCount = MANUAL_STEP_COUNT - stepper.remaining();
       stepper.stop();
       char message[40];
       sprintf(message, "Quantity: %ld\n", stepCount);      
       _oledDisplay->setLine(2, message, true, false, true);
+      char log[50];
+      sprintf(log, "Manual dispensing quantity %d", stepCount);
+      firebase->sendLog(log);
     }
   }
 
@@ -204,6 +219,7 @@ void FeederModule::loop() {
     if (XUtils::isElapsedDelay(millis(), &lastReverseTime, 2000)) {
       lastReverseTime = millis();
       stepper.start(-40);    
+      firebase->sendLog("Manual reverse activation");
     }
   }
 
