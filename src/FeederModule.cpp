@@ -145,7 +145,7 @@ void FeederModule::loop() {
             stepper.start(quantity);
             // logProgramedDispensing(quantity);
             char log[50];
-            sprintf(log, "Automatic dispensing quantity %d", quantity);
+            sprintf(log, MSG_LOG_AUTO_DISPENSING, quantity);
             firebase->sendLog(log);
             break;
           }
@@ -180,9 +180,10 @@ void FeederModule::loop() {
   } else {
     stepper.stop();
     if (mustWarnNoFoodDetected && !_manualReverse) {
-      Serial.printf("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str());    
-      sendPushNotif(_config->getName(), MSG_NO_FOOD);
-      firebase->sendAlert("Dispensing failure");
+      Serial.printf("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str()); 
+      firebase->sendAlert(MSG_ALERT_DISPENSING_FAILURE);
+      // Sending notif Could be handled by a Firebase function but not sure it's best
+      sendPushNotif(_config->getName(), MSG_ALERT_DISPENSING_FAILURE);
     }
     _manualReverse = false;
     mustWarnNoFoodDetected = false;
@@ -207,7 +208,7 @@ void FeederModule::loop() {
       sprintf(message, "Quantity: %ld\n", stepCount);      
       _oledDisplay->setLine(2, message, true, false, true);
       char log[50];
-      sprintf(log, "Manual dispensing quantity %d", stepCount);
+      sprintf(log, MSG_LOG_MANUAL_DISPENSING, stepCount);
       firebase->sendLog(log);
     }
   }
@@ -219,7 +220,7 @@ void FeederModule::loop() {
     if (XUtils::isElapsedDelay(millis(), &lastReverseTime, 2000)) {
       lastReverseTime = millis();
       stepper.start(-40);    
-      firebase->sendLog("Manual reverse activation");
+      firebase->sendLog(MSG_LOG_MANUAL_REVERSE);
     }
   }
 
