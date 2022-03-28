@@ -105,6 +105,7 @@ void FeederModule::saveSettings() {
     delete prgms[p];
   }
   _config->saveToEeprom();
+  firebase->sendLog("Schedule updated");
   freeMem = system_get_free_heap_size();
   Serial.printf("%s Heap after sorting programs: %d\n", NTP.getTimeDateString().c_str(), freeMem);   
   sendHtml("Config saved", 200);
@@ -179,12 +180,14 @@ void FeederModule::loop() {
     _previousLevel = level;  
   } else {
     stepper.stop();
+#ifndef NO_IR    
     if (mustWarnNoFoodDetected && !_manualReverse) {
       Serial.printf("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str()); 
       firebase->sendAlert(MSG_ALERT_DISPENSING_FAILURE);
       // Sending notif Could be handled by a Firebase function but not sure it's best
       sendPushNotif(_config->getName(), MSG_ALERT_DISPENSING_FAILURE);
     }
+#endif    
     _manualReverse = false;
     mustWarnNoFoodDetected = false;
   }
