@@ -25,7 +25,7 @@ public:
   unsigned long lastTriggerTime = 0;  
   unsigned long lastReverseTime = 0;  
 
-  char messageSchedule[40];
+  char messageSchedule[20]; // We display 6 digit pairs separated with spaces
   int _forwardPin;
   int _reversePin;
 

@@ -4,7 +4,7 @@ Fish feeder using ESP8266, a stepper motor and an oled screen.
 
 
 
-WORK IN PROGRESS, only a prototype is being tested right now, on my desk, not on actuall aquarium :)
+WORK IN PROGRESS, only a prototype is being tested right now, on my desk, not on actual aquarium :)
 
 
 This will be a module of the Iotinator framework (https://github.com/reivaxy/iotinator), which can already work autonomously (no master module is needed).

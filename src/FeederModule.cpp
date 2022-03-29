@@ -53,19 +53,22 @@ void FeederModule::initMsgSchedule() {
 }
 
 void FeederModule::settingsPage() {
-  int maxSize = strlen(settingsBeginingPage) + strlen(settingsEndingPage) + PROGRAM_COUNT * (strlen(formTemplate) + 15) ;  
+  String pageTemplate(FPSTR(settingsBeginingPage));
+  String endingTemplate(FPSTR(settingsEndingPage));
+  String formTemplate(FPSTR(settingTemplate));
+  int maxSize = strlen(pageTemplate.c_str()) + strlen(endingTemplate.c_str()) + strlen(_config->getName()) + PROGRAM_COUNT * (strlen(formTemplate.c_str()) + 15) ;  
   Serial.printf("Size %d\n", maxSize);
   char* result = (char*)malloc(maxSize);
-  strcpy(result, settingsBeginingPage);
+  sprintf(result, pageTemplate.c_str(), _config->getName());
   char *resultPtr = result + strlen(result);
   for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
     Program *prgm = _config->getProgram(p);
-    sprintf(resultPtr, formTemplate, p, prgm->getHour(),
+    sprintf(resultPtr, formTemplate.c_str(), p, prgm->getHour(),
                                     p, prgm->getQuantity(),
                                     p, prgm->isActive()?"checked":"");
     resultPtr = result + strlen(result);
   }
-  strcat(result, settingsEndingPage);
+  strcat(result, endingTemplate.c_str());
   sendHtml(result, 200);
   free(result);
 }
@@ -104,10 +107,12 @@ void FeederModule::saveSettings() {
     prgm->setActive(prgms[p]->isActive());    
     delete prgms[p];
   }
-  _config->saveToEeprom();
-  firebase->sendLog("Schedule updated");
+ _config->saveToEeprom();
   freeMem = system_get_free_heap_size();
   Serial.printf("%s Heap after sorting programs: %d\n", NTP.getTimeDateString().c_str(), freeMem);   
+  // Trying to send a message while processing an incoming request crashes the module
+  // So we send it later
+  firebase->sendDifferedLog("Schedule updated");
   sendHtml("Config saved", 200);
   initMsgSchedule();
 }
