@@ -1,15 +1,28 @@
 # iotFeeder
+
 Fish feeder using ESP8266, a stepper motor and an oled screen.
+
+
+
+WORK IN PROGRESS, only a prototype is being tested right now, on my desk, not on actuall aquarium :)
+
 
 This will be a module of the Iotinator framework (https://github.com/reivaxy/iotinator), which can already work autonomously (no master module is needed).
 
-It's using cheap and widely available components (each under $4), a 3D printed case, and an optional PCB.
+It connects to your home Wifi network to fetch time and post logs and alerts to Firebase (Google Cloud) as well as send push notifications when it detects that it's empty. Firebase will also send you push notifications when the module seems to be disconnected (power outage, ...)
+
+Notifications are sent using Pushover.net 
+
+
+It's using cheap and widely available components (each under $4), a 3D printed case, and an optional but recommended PCB.
+
+Firebase and Pushover are used within the free offer allowances, so the overall cost should not exceed about $25.
 
 The ESP8266 allows some WiFi access for setting the feeding times and quantities, as well as OTA firmware upgrade, the tiny Oled screen displays what's going on, and one push button helps calibrating the quantities as well as manually treat your little fishes when they deserve it.
 
 The stepper motor allows controling with precision the amount of food dispensed.
 
-Here is the overall aspect of the 3D printed case:
+Here is the overall aspect of the 3D printed case (before the addition of IR food dispensing detection)
 
 <img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/3DPrintedCase.jpg?raw=true" width="512px"/>
 
