@@ -17,8 +17,13 @@ XIOTModule* module;
 
 int scl = 5; 
 int sda = 4; 
-int forwardPin = 16; 
-int reversePin = 15;  
+int reversePin = 16;  
+
+#ifdef PCB_v1
+int forwardPin = 9;
+#else
+int forwardPin = 15; 
+#endif
 
 void setup() {
   Serial.begin(115200);

@@ -11,7 +11,7 @@
 #include <XUtils.h>
 #include "Program.h"
 
-#define CONFIG_VERSION 1
+#define CONFIG_VERSION 2
 #define MODULE_NAME "Feeder"
 
 #define PROGRAM_COUNT 6
