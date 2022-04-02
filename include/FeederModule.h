@@ -19,7 +19,8 @@ public:
   void settingsPage();
   void saveSettings();
   void logProgramedDispensing(uint16_t quantity);
-
+  void setCustomModuleRecordFields(JsonObject *jsonBufferRoot) override;
+  
   Stepper stepper;
   FeederConfigClass* _config;
   unsigned long lastTriggerTime = 0;  

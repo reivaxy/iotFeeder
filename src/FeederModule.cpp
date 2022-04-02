@@ -117,8 +117,12 @@ void FeederModule::saveSettings() {
   initMsgSchedule();
 }
 
-void FeederModule::logProgramedDispensing(uint16_t quantity) {
-
+void FeederModule::setCustomModuleRecordFields(JsonObject *jsonBufferRoot) {
+  bool with_ir = true;
+  #ifdef NO_IR
+  with_ir = false;
+  #endif
+  jsonBufferRoot->set("with_ir", with_ir);
 }
 
 void FeederModule::loop() {
@@ -149,7 +153,6 @@ void FeederModule::loop() {
             // Activate the stepper
             // This also powers up the IR detector since it's plugged to the EN pin
             stepper.start(quantity);
-            // logProgramedDispensing(quantity);
             char log[50];
             sprintf(log, MSG_LOG_AUTO_DISPENSING, quantity);
             firebase->sendLog(log);
