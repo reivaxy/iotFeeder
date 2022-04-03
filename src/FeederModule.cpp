@@ -71,6 +71,13 @@ void FeederModule::settingsPage() {
   strcat(result, endingTemplate.c_str());
   sendHtml(result, 200);
   free(result);
+
+  // Debugging message fifo
+  // for(int i= 0; i < 22; i++) {
+  //   char message[100];
+  //   sprintf(message, "Message %d", i);
+  //   firebase->differMessage(message);
+  // }
 }
 
 void FeederModule::saveSettings() {
@@ -112,7 +119,7 @@ void FeederModule::saveSettings() {
   Serial.printf("%s Heap after sorting programs: %d\n", NTP.getTimeDateString().c_str(), freeMem);   
   // Trying to send a message while processing an incoming request crashes the module
   // So we send it later
-  firebase->sendDifferedLog("Schedule updated");
+  firebase->differMessage("Schedule updated");
   sendHtml("Config saved", 200);
   initMsgSchedule();
 }
@@ -198,13 +205,13 @@ void FeederModule::loop() {
 #endif    
     if (_manualReverse) {
       _manualReverse = false;
-      firebase->sendDifferedLog(MSG_LOG_MANUAL_REVERSE);
+      firebase->differMessage(MSG_LOG_MANUAL_REVERSE);
     }
     if (_automaticDispensing) {
       _automaticDispensing = false;
-      char log[50];
-      sprintf(log, MSG_LOG_AUTO_DISPENSING, lastDispensedQuantity);
-      firebase->sendDifferedLog(log);      
+      char logMessage[50];
+      sprintf(logMessage, MSG_LOG_AUTO_DISPENSING, lastDispensedQuantity);
+      firebase->differMessage(logMessage);      
     }
     mustWarnNoFoodDetected = false;
   }
@@ -227,9 +234,9 @@ void FeederModule::loop() {
       char message[40];
       sprintf(message, "Quantity: %ld\n", stepCount);      
       _oledDisplay->setLine(2, message, true, false, true);
-      char log[50];
-      sprintf(log, MSG_LOG_MANUAL_DISPENSING, stepCount);
-      firebase->sendDifferedLog(log);
+      char logMessage[50];
+      sprintf(logMessage, MSG_LOG_MANUAL_DISPENSING, stepCount);
+      firebase->differMessage(logMessage);
     }
   }
 
