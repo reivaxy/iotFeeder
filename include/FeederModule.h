@@ -34,7 +34,10 @@ public:
 
   bool _manualForward = false;
   bool _manualReverse = false;
+  bool _automaticDispensing = false;
 
   bool mustWarnNoFoodDetected = false;
+  uint16_t lastDispensedQuantity = 0;
+
 
 };

@@ -139,7 +139,7 @@ void FeederModule::loop() {
       // This is a security in case the esp restarts while dispensing food, we don't want to dispense it again.
       // The delay should be at most the one needed to obtain time from NTP after a restart
       // When a program triggers, it disables itself to not trigger again, until re enabled
-      if (s < 10) {
+      if (!_automaticDispensing && s < 10) {
         uint8_t h = (uint8_t)hour();
         for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
           quantity = _config->getProgram(p)->triggerQuantity(h);        
@@ -153,9 +153,8 @@ void FeederModule::loop() {
             // Activate the stepper
             // This also powers up the IR detector since it's plugged to the EN pin
             stepper.start(quantity);
-            char log[50];
-            sprintf(log, MSG_LOG_AUTO_DISPENSING, quantity);
-            firebase->sendLog(log);
+            lastDispensedQuantity = quantity;
+            _automaticDispensing = true;
             break;
           }
         }
@@ -187,6 +186,7 @@ void FeederModule::loop() {
     }
     _previousLevel = level;  
   } else {
+    // No step remainning
     stepper.stop();
 #ifndef NO_IR    
     if (mustWarnNoFoodDetected && !_manualReverse) {
@@ -196,7 +196,16 @@ void FeederModule::loop() {
       sendPushNotif(_config->getName(), MSG_ALERT_DISPENSING_FAILURE);
     }
 #endif    
-    _manualReverse = false;
+    if (_manualReverse) {
+      _manualReverse = false;
+      firebase->sendDifferedLog(MSG_LOG_MANUAL_REVERSE);
+    }
+    if (_automaticDispensing) {
+      _automaticDispensing = false;
+      char log[50];
+      sprintf(log, MSG_LOG_AUTO_DISPENSING, lastDispensedQuantity);
+      firebase->sendDifferedLog(log);      
+    }
     mustWarnNoFoodDetected = false;
   }
 
@@ -220,19 +229,21 @@ void FeederModule::loop() {
       _oledDisplay->setLine(2, message, true, false, true);
       char log[50];
       sprintf(log, MSG_LOG_MANUAL_DISPENSING, stepCount);
-      firebase->sendLog(log);
+      firebase->sendDifferedLog(log);
     }
   }
 
   // Check the "move back" button, and move back by a small step quantity if necessary
   int pushReverse = digitalRead(_reversePin);
   if (pushReverse == HIGH) {
-    _manualReverse = true;
-    if (XUtils::isElapsedDelay(millis(), &lastReverseTime, 2000)) {
+    // If keep pressing, does not relaunch, need to release and press button again
+    if (XUtils::isElapsedDelay(millis(), &lastReverseTime, 20000)) {
+      _manualReverse = true;
       lastReverseTime = millis();
       stepper.start(-40);    
-      firebase->sendLog(MSG_LOG_MANUAL_REVERSE);
     }
+  } else {
+    lastReverseTime = 0;  // Once button was released, can be used again
   }
 
 }
