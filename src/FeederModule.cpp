@@ -153,7 +153,7 @@ void FeederModule::loop() {
           if (quantity != 0) {
             Serial.printf("%s\n", NTP.getTimeDateString(now()).c_str());
             char message[50];
-            sprintf(message, "At %d:00, Qtity: %d\n", h, quantity);
+            sprintf(message, "%s %d:00, %s: %d\n", MSG_DISPLAY_AT, h, MSG_DISPLAY_QTITY, quantity);
             Serial.printf(message);
             _oledDisplay->setLine(2, message);
             lastTriggerTime = millis();
@@ -209,9 +209,12 @@ void FeederModule::loop() {
     }
     if (_automaticDispensing) {
       _automaticDispensing = false;
-      char logMessage[50];
-      sprintf(logMessage, MSG_LOG_AUTO_DISPENSING, lastDispensedQuantity);
-      firebase->differMessage(logMessage);      
+
+      DynamicJsonBuffer jsonBuffer(10);
+      JsonObject& jsonBufferRoot = jsonBuffer.createObject();
+      jsonBufferRoot["message"] = MSG_LOG_AUTO_DISPENSING;
+      jsonBufferRoot["quantity"] = lastDispensedQuantity;
+      firebase->differMessage(&jsonBufferRoot);
     }
     mustWarnNoFoodDetected = false;
   }
@@ -232,11 +235,13 @@ void FeederModule::loop() {
       long stepCount = MANUAL_STEP_COUNT - stepper.remaining();
       stepper.stop();
       char message[40];
-      sprintf(message, "Quantity: %ld\n", stepCount);      
+      sprintf(message, "%s: %ld\n", MSG_DISPLAY_QTITY, stepCount);      
       _oledDisplay->setLine(2, message, true, false, true);
-      char logMessage[50];
-      sprintf(logMessage, MSG_LOG_MANUAL_DISPENSING, stepCount);
-      firebase->differMessage(logMessage);
+      DynamicJsonBuffer jsonBuffer(10);
+      JsonObject& jsonBufferRoot = jsonBuffer.createObject();
+      jsonBufferRoot["message"] = MSG_LOG_MANUAL_DISPENSING;
+      jsonBufferRoot["quantity"] = stepCount;
+      firebase->differMessage(&jsonBufferRoot);
     }
   }
 

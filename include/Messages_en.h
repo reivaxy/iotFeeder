@@ -14,3 +14,5 @@
 #define MSG_LOG_AUTO_DISPENSING "Automatic dispensing quantity %d"
 #define MSG_LOG_MANUAL_DISPENSING "Manual dispensing quantity %d"
 #define MSG_LOG_MANUAL_REVERSE "Manual reverse activation"
+#define MSG_DISPLAY_AT "At"
+#define MSG_DISPLAY_QTITY "Qtity"
