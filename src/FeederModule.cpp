@@ -198,7 +198,7 @@ void FeederModule::loop() {
 #ifndef NO_IR    
     if (mustWarnNoFoodDetected && !_manualReverse) {
       Serial.printf("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str()); 
-      firebase->sendAlert(MSG_ALERT_DISPENSING_FAILURE);
+      firebase->differAlert(MSG_ALERT_DISPENSING_FAILURE);
       // Sending notif Could be handled by a Firebase function but not sure it's best
       sendPushNotif(_config->getName(), MSG_ALERT_DISPENSING_FAILURE);
     }
