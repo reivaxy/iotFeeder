@@ -9,6 +9,7 @@
 #define MSG_INIT_HOUR "Hour"
 #define MSG_INIT_QUANTITY "Quantity"
 #define MSG_INIT_ACTIVE "Active"
+#define MSG_INIT_TEST_QUANTITY "One time dispensing"
 #define MSG_SETINGS_WELCOME "Settings"
 #define MSG_ALERT_DISPENSING_FAILURE "No food dispensed"
 #define MSG_LOG_AUTO_DISPENSING "Automatic dispensing quantity %d"

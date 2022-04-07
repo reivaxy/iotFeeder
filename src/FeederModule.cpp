@@ -37,6 +37,22 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
   _server->on("/", HTTP_GET, [&]() {
     settingsPage();
   });
+
+  _server->on("/feederApi/feedOnce", HTTP_POST, [&]() {
+    feedOnce();
+  });
+}
+
+void FeederModule::feedOnce() {
+  String quantity = _server->arg("test_qtity");
+  uint16_t qtity = quantity.toInt();
+  if (qtity != 0) {
+    _oneTimeDispensing = true;
+    stepper.start(qtity);
+    lastDispensedQuantity = qtity;
+  }
+
+ sendHtml("Done", 200);
 }
 
 void FeederModule::initMsgSchedule() {
@@ -144,11 +160,12 @@ void FeederModule::loop() {
       int s = second();
       // Only check programs during the first 10 seconds of each hour
       // This is a security in case the esp restarts while dispensing food, we don't want to dispense it again.
-      // The delay should be at most the one needed to obtain time from NTP after a restart
+      // The time span should be at most the one needed to obtain time from NTP after a restart
       // When a program triggers, it disables itself to not trigger again, until re enabled
       if (!_automaticDispensing && s < 10) {
         uint8_t h = (uint8_t)hour();
         for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
+          // If an active program is set for the h hour, it will return a non 0 quantity
           quantity = _config->getProgram(p)->triggerQuantity(h);        
           if (quantity != 0) {
             Serial.printf("%s\n", NTP.getTimeDateString(now()).c_str());
@@ -209,13 +226,22 @@ void FeederModule::loop() {
     }
     if (_automaticDispensing) {
       _automaticDispensing = false;
-
       DynamicJsonBuffer jsonBuffer(10);
       JsonObject& jsonBufferRoot = jsonBuffer.createObject();
       jsonBufferRoot["message"] = MSG_LOG_AUTO_DISPENSING;
       jsonBufferRoot["quantity"] = lastDispensedQuantity;
       firebase->differMessage(&jsonBufferRoot);
     }
+
+    if (_oneTimeDispensing) {
+      _oneTimeDispensing = false;
+      DynamicJsonBuffer jsonBuffer(10);
+      JsonObject& jsonBufferRoot = jsonBuffer.createObject();
+      jsonBufferRoot["message"] = MSG_INIT_TEST_QUANTITY;
+      jsonBufferRoot["quantity"] = lastDispensedQuantity;
+      firebase->differMessage(&jsonBufferRoot);
+    }
+
     mustWarnNoFoodDetected = false;
   }
 

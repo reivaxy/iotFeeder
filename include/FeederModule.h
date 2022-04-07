@@ -18,6 +18,7 @@ public:
   void initMsgSchedule();
   void settingsPage();
   void saveSettings();
+  void feedOnce();
   void logProgramedDispensing(uint16_t quantity);
   void setCustomModuleRecordFields(JsonObject *jsonBufferRoot) override;
   
@@ -35,6 +36,7 @@ public:
   bool _manualForward = false;
   bool _manualReverse = false;
   bool _automaticDispensing = false;
+  bool _oneTimeDispensing = false;
 
   bool mustWarnNoFoodDetected = false;
   uint16_t lastDispensedQuantity = 0;
