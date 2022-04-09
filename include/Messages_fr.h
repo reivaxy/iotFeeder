@@ -10,6 +10,9 @@
 #define MSG_INIT_QUANTITY "Quantité"
 #define MSG_INIT_ACTIVE "Actif"
 #define MSG_INIT_TEST_QUANTITY "Distribution ponctuelle"
+#define MSG_INIT_ILLEGAL_VALUE "Valeur non autorisée"
+#define MSG_INIT_DONE "Action exécutée"
+
 #define MSG_SETINGS_WELCOME "Réglages"
 #define MSG_ALERT_DISPENSING_FAILURE "Nourriture non distribuée"
 #define MSG_LOG_AUTO_DISPENSING "Distribution automatique"

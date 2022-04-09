@@ -10,6 +10,9 @@
 #define MSG_INIT_QUANTITY "Quantity"
 #define MSG_INIT_ACTIVE "Active"
 #define MSG_INIT_TEST_QUANTITY "One time dispensing"
+#define MSG_INIT_ILLEGAL_VALUE "Illegal value"
+#define MSG_INIT_DONE "Action done"
+
 #define MSG_SETINGS_WELCOME "Settings"
 #define MSG_ALERT_DISPENSING_FAILURE "No food dispensed"
 #define MSG_LOG_AUTO_DISPENSING "Automatic dispensing quantity %d"
@@ -17,3 +20,4 @@
 #define MSG_LOG_MANUAL_REVERSE "Manual reverse activation"
 #define MSG_DISPLAY_AT "At"
 #define MSG_DISPLAY_QTITY "Qtity"
+

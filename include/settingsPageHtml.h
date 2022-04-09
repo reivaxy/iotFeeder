@@ -35,7 +35,7 @@ static const  char settingsEndingPage[] PROGMEM ="\
 </br></br></br>\
 <form action='/feederApi/feedOnce' method='post'>\
   <div>" MSG_INIT_TEST_QUANTITY "</div>\
-" MSG_INIT_QUANTITY " <input name='test_qtity' type='number' min=0 max=5000 size=4/></br>\
+" MSG_INIT_QUANTITY " <input name='test_qtity' type='number' min=-100 max=5000 size=4/></br>\
   <input type='submit'/>\
 </form>\
 </body>\
