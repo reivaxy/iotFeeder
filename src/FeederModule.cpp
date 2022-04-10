@@ -45,14 +45,18 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
 
 void FeederModule::feedOnce() {
   String quantity = _server->arg("test_qtity");
-  uint16_t qtity = quantity.toInt();
+  int16_t qtity = quantity.toInt();
+  if (qtity < -100 || qtity > 5000) {    
+    sendHtml(MSG_INIT_ILLEGAL_VALUE, 200);
+    return;
+  }
   if (qtity != 0) {
     _oneTimeDispensing = true;
     stepper.start(qtity);
     lastDispensedQuantity = qtity;
   }
 
- sendHtml("Done", 200);
+ sendHtml(MSG_INIT_DONE, 200);
 }
 
 void FeederModule::initMsgSchedule() {
@@ -113,8 +117,12 @@ void FeederModule::saveSettings() {
     String quantity = _server->arg(quantityParamName);
     String active = _server->arg(activeParamName);
     Program* prgm = new Program(&fprgms[p]);
+    uint16_t qtity = (uint16_t)quantity.toInt();
+    if (qtity > 5000) {
+      qtity = 0;
+    }
+    prgm->setQuantity(qtity);
     prgm->setHour((uint8_t)hour.toInt());
-    prgm->setQuantity((uint16_t)quantity.toInt());
     prgm->setActive(active.equals("on")?true:false);
     prgms[p] = prgm;
     //Serial.printf("p%d Hour %s Qtity %s Active %s\n", p, hour.c_str(), quantity.c_str(), active.c_str());
@@ -136,7 +144,7 @@ void FeederModule::saveSettings() {
   // Trying to send a message while processing an incoming request crashes the module
   // So we send it later
   firebase->differMessage("Schedule updated");
-  sendHtml("Config saved", 200);
+  sendHtml(MSG_INIT_DONE, 200);
   initMsgSchedule();
 }
 
