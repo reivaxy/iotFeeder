@@ -2,21 +2,17 @@
 
 Fish feeder using ESP8266, a stepper motor and an oled screen.
 
+It's being used on my small reef aquarium for 3 weeks without any issue, and I'm building 5 more to equip bigger aquariums.
 
+This will be a module of the Iotinator framework (https://github.com/reivaxy/iotinator), but it can already work autonomously (no master module is needed).
 
-WORK IN PROGRESS, only a prototype is being tested right now, on my desk, not on actual aquarium :)
+It connects to your home Wifi network to fetch time and post logs and alerts to Firebase (Google Cloud free account) as well as send push notifications when it detects that it's empty. Firebase will also send you push notifications when the module seems to be disconnected (power outage, ...)
 
-
-This will be a module of the Iotinator framework (https://github.com/reivaxy/iotinator), which can already work autonomously (no master module is needed).
-
-It connects to your home Wifi network to fetch time and post logs and alerts to Firebase (Google Cloud) as well as send push notifications when it detects that it's empty. Firebase will also send you push notifications when the module seems to be disconnected (power outage, ...)
-
-Notifications are sent using Pushover.net 
-
+Notifications are sent using Pushover.net, using a one-time fee plan (about $5).
 
 It's using cheap and widely available components (each under $4), a 3D printed case, and an optional but recommended PCB.
 
-Firebase and Pushover are used within the free offer allowances, so the overall cost should not exceed about $25.
+Firebase is used within the free offer allowances, so the overall cost should not exceed about $25.
 
 The ESP8266 allows some WiFi access for setting the feeding times and quantities, as well as OTA firmware upgrade, the tiny Oled screen displays what's going on, and one push button helps calibrating the quantities as well as manually treat your little fishes when they deserve it.
 
@@ -37,6 +33,11 @@ The 3D design is using an Archimedes' screw:
 Here is a short demo with the prototype showing the configuration page, then the Oled screen, then the dispensing of one programmed serving.
 
 https://youtu.be/9wqxyTTBjuU
+
+
+## BUILD YOURS
+
+Check the [wiki for assembling instructions](https://github.com/reivaxy/iotFeeder/wiki) with many pictures (work in progress) 
 
 ## COMPONENTS NEEDED
 
@@ -83,5 +84,4 @@ Other components easy to find anywhere:
 - 4 to attach the stepper plate to the case
 - 4 to attach the back panel to the case
 
- 
-About 160g of PLA filament.
+ About 160g of PLA filament.
