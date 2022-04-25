@@ -17,7 +17,7 @@
 #define IR_IN  A0
 
 FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, 
-                            int displayScl, int forwardPin, int reversePin):XIOTModule(config, displayAddr, displaySda, displayScl, false, 255) {
+                            int displayScl, int forwardPin, int reversePin):XIOTModule(config, displayAddr, displaySda, displayScl, false, config->getBrightness()) {
   pinMode(forwardPin, INPUT);
   pinMode(reversePin, INPUT);
 
@@ -28,7 +28,7 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
   lastTriggerTime = 0;
   stepper = Stepper();
   initMsgSchedule();
-  _oledDisplay->setLineAlignment(1, TEXT_ALIGN_CENTER);
+  _oledDisplay->setLineAlignment(1, TEXT_ALIGN_CENTER); 
   _oledDisplay->setLineAlignment(3, TEXT_ALIGN_CENTER);
   _oledDisplay->setTransientDuration(2, 30000);  // List to display step count at end of test session
   _server->on("/feederApi/saveSettings", HTTP_POST, [&]() {
