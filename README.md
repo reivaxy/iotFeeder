@@ -35,9 +35,15 @@ Here is a short demo with the prototype showing the configuration page, then the
 https://youtu.be/9wqxyTTBjuU
 
 
-## BUILD YOURS
+## BUILDING YOURS
 
-Check the [wiki for assembling instructions](https://github.com/reivaxy/iotFeeder/wiki) with many pictures (work in progress) 
+If you intend to build one, please first check the [wiki for assembling instructions](https://github.com/reivaxy/iotFeeder/wiki) with many pictures (work in progress).
+
+And feel free to let me know, I might help with suggestions or latest info not already updated here.
+
+I also offer to send you free of charge the two very tiny PCBs needed for the infrared sensors, since I have a few hundreds of them.
+
+
 
 ## COMPONENTS NEEDED
 

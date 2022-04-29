@@ -4,7 +4,9 @@ I left the text file with the coordinates of JLCPCB, a Chinese firm who does a v
 
 For this board, I've ordered 10 pieces for about $10 shipping included.
 
-WARNING: on PCB v1, I have forgotten capacitors on the LM1117 regulator pins, not sure how it will behave. PCB version v2 will have them.
+WARNING: on PCB v1, I was using GPIO9, which should not be used => had to cut a track and add a wire. Also, no decoupling capacitor on the regulator, but it worked fine.
+
+PCB v2 fixes all this, and provides support for infra red sensor.
 
 
 Top layer:
