@@ -2,7 +2,7 @@
 
 The case was designed to be printable with no support, except for the "roof" of the IRInsert opening that may need some basic supports.
 
-The archimedes's screw is printed in two halves that are joined by the bearing at each end.
+The archimedes's screw is printed in two halves that are joined by the bearing at each end. There is no need to glue the two halves together.
 
 3 versions of the screw are available: 6 rotations, 9 rotations and 12 rotations.
 
@@ -17,8 +17,4 @@ There are several options to fix the case to the aquarium, both offer the case r
 
 The back comes in two flavors, a plain one that you print as usual, and a bi-color one that features arrows on top of the push button holes, that you can print with a printer handling several colors (2 heads, Prusa MMU, or Palette)
 
-
-I printed the prototype with PLA, and 0.2 mm layers.
-
-
-Todo: documenting how to best print each part.
+Check the wiki for details on printing each part.
