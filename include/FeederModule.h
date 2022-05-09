@@ -10,6 +10,8 @@
 #include "Messages.h"
 #include "Stepper.h"
  
+#define MAX_STATUS_LENGTH 150
+
 class FeederModule:public XIOTModule {
 public:
   FeederModule(FeederConfigClass* config, int displayAddr, int displaySda, int displayScl, int forwardPin, int reversePin);
@@ -21,6 +23,7 @@ public:
   void feedOnce();
   void logProgramedDispensing(uint16_t quantity);
   void setCustomModuleRecordFields(JsonObject *jsonBufferRoot) override;
+  void dispensingFailed(boolean transientDisplay);
   
   Stepper stepper;
   FeederConfigClass* _config;
@@ -39,7 +42,9 @@ public:
   bool _oneTimeDispensing = false;
 
   bool mustWarnNoFoodDetected = false;
-  uint16_t lastDispensedQuantity = 0;
+  int16_t lastDispensedQuantity = 0;
+
+  char lastStatus[MAX_STATUS_LENGTH + 1];
 
 
 };

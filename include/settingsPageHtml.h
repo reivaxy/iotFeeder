@@ -20,6 +20,8 @@ a{right:40px;position:absolute;text-decoration:none}\
 </head>\
 <body>\
 <h3>" MSG_SETINGS_WELCOME " %s <a href='/config'>⚙</a></h3>\
+<div>" MSG_INIT_CLOCK " %s</div>\
+<div>" MSG_INIT_LAST_ACTION " %s</div><hr>\
 <form action='/feederApi/saveSettings' method='post'>\
 ";
 

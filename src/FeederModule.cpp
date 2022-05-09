@@ -20,7 +20,7 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
                             int displayScl, int forwardPin, int reversePin):XIOTModule(config, displayAddr, displaySda, displayScl, false, config->getBrightness()) {
   pinMode(forwardPin, INPUT);
   pinMode(reversePin, INPUT);
-
+  lastStatus[0] = 0;
   _forwardPin = forwardPin;
   _reversePin = reversePin;
   _oledDisplay->setLineAlignment(2, TEXT_ALIGN_CENTER);
@@ -30,7 +30,8 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
   initMsgSchedule();
   _oledDisplay->setLineAlignment(1, TEXT_ALIGN_CENTER); 
   _oledDisplay->setLineAlignment(3, TEXT_ALIGN_CENTER);
-  _oledDisplay->setTransientDuration(2, 30000);  // List to display step count at end of test session
+  _oledDisplay->setTransientDuration(2, 30000);  // Line to display step count at end of test session
+  _oledDisplay->setTransientDuration(3, 30000);  // Line to display possible dispensing failure (tank empty, clogged...)
   _server->on("/feederApi/saveSettings", HTTP_POST, [&]() {
     saveSettings();
   });
@@ -76,10 +77,11 @@ void FeederModule::settingsPage() {
   String pageTemplate(FPSTR(settingsBeginingPage));
   String endingTemplate(FPSTR(settingsEndingPage));
   String formTemplate(FPSTR(settingTemplate));
-  int maxSize = strlen(pageTemplate.c_str()) + strlen(endingTemplate.c_str()) + strlen(_config->getName()) + PROGRAM_COUNT * (strlen(formTemplate.c_str()) + 15) ;  
+  int maxSize = strlen(pageTemplate.c_str()) + strlen(_config->getName())  + strlen(NTP.getTimeDateString().c_str()) + strlen(lastStatus) 
+                                             + strlen(endingTemplate.c_str())+ PROGRAM_COUNT * (strlen(formTemplate.c_str()) + 15) + 20 ;  
   Serial.printf("Size %d\n", maxSize);
   char* result = (char*)malloc(maxSize);
-  sprintf(result, pageTemplate.c_str(), _config->getName());
+  sprintf(result, pageTemplate.c_str(), _config->getName(), NTP.getTimeDateString().c_str(), lastStatus);
   char *resultPtr = result + strlen(result);
   for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
     Program *prgm = _config->getProgram(p);
@@ -143,7 +145,7 @@ void FeederModule::saveSettings() {
   Serial.printf("%s Heap after sorting programs: %d\n", NTP.getTimeDateString().c_str(), freeMem);   
   // Trying to send a message while processing an incoming request crashes the module
   // So we send it later
-  firebase->differMessage("Schedule updated");
+  firebase->differMessage(MSG_LOG_SCHEDULE_UPDATED);
   sendHtml(MSG_INIT_DONE, 200);
   initMsgSchedule();
 }
@@ -154,6 +156,14 @@ void FeederModule::setCustomModuleRecordFields(JsonObject *jsonBufferRoot) {
   with_ir = false;
   #endif
   jsonBufferRoot->set("with_ir", with_ir);
+}
+
+void FeederModule::dispensingFailed(boolean transientDisplay) {
+    _oledDisplay->setLine(3, MSG_DISPLAY_FAILED, transientDisplay, false, true);
+    strcat(lastStatus, MSG_ALERT_DISPENSING_FAILURE);
+    firebase->differAlert(MSG_ALERT_DISPENSING_FAILURE);
+    // Sending notif Could be handled by a Firebase function but not sure it's best
+    sendPushNotif(_config->getName(), MSG_ALERT_DISPENSING_FAILURE);
 }
 
 void FeederModule::loop() {
@@ -176,16 +186,18 @@ void FeederModule::loop() {
           // If an active program is set for the h hour, it will return a non 0 quantity
           quantity = _config->getProgram(p)->triggerQuantity(h);        
           if (quantity != 0) {
+            lastDispensedQuantity = quantity;
             Serial.printf("%s\n", NTP.getTimeDateString(now()).c_str());
+            sprintf(lastStatus, "%s: %s %ld ", NTP.getTimeDateString(now()).c_str(), MSG_LOG_AUTO_DISPENSING, lastDispensedQuantity);
             char message[50];
-            sprintf(message, "%s %d:00, %s: %d\n", MSG_DISPLAY_AT, h, MSG_DISPLAY_QTITY, quantity);
+            sprintf(message, "%s %02d:00, %s: %d\n", MSG_DISPLAY_AT, h, MSG_DISPLAY_QTITY, quantity);
             Serial.printf(message);
             _oledDisplay->setLine(2, message);
+            _oledDisplay->setLine(3, "");
             lastTriggerTime = millis();
             // Activate the stepper
             // This also powers up the IR detector since it's plugged to the EN pin
             stepper.start(quantity);
-            lastDispensedQuantity = quantity;
             _automaticDispensing = true;
             break;
           }
@@ -209,6 +221,7 @@ void FeederModule::loop() {
       mustWarnNoFoodDetected = true;
     }
     stepper.run();
+#ifndef NO_IR    
     int level = analogRead(IR_IN)/10;                                                                                                                   
     if (abs(_previousLevel - level) > 3) {
       if (_previousLevel != -1 && isTimeInitialized()) {
@@ -217,15 +230,16 @@ void FeederModule::loop() {
       }
     }
     _previousLevel = level;  
+#else
+    mustWarnNoFoodDetected = false;  
+#endif
   } else {
     // No step remainning
     stepper.stop();
 #ifndef NO_IR    
-    if (mustWarnNoFoodDetected && !_manualReverse) {
+    if (mustWarnNoFoodDetected && !_manualReverse && !_oneTimeDispensing) {
       Serial.printf("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str()); 
-      firebase->differAlert(MSG_ALERT_DISPENSING_FAILURE);
-      // Sending notif Could be handled by a Firebase function but not sure it's best
-      sendPushNotif(_config->getName(), MSG_ALERT_DISPENSING_FAILURE);
+      dispensingFailed(false);
     }
 #endif    
     if (_manualReverse) {
@@ -243,6 +257,19 @@ void FeederModule::loop() {
 
     if (_oneTimeDispensing) {
       _oneTimeDispensing = false;
+      // This features allows to go backward by providing a negative quantity:
+      // we don't want to display nor warn 
+      if (lastDispensedQuantity > 0) {
+        sprintf(lastStatus, "%s: %s %ld ", NTP.getTimeDateString(now()).c_str(), MSG_INIT_TEST_QUANTITY, lastDispensedQuantity);
+        char message[40];
+        sprintf(message, "%s %02d:%02d, %s: %d\n", MSG_DISPLAY_AT, hour(), minute(), MSG_DISPLAY_QTITY, lastDispensedQuantity);
+
+        _oledDisplay->setLine(2, message);
+        if (mustWarnNoFoodDetected) {
+          mustWarnNoFoodDetected = false;
+          dispensingFailed(false);
+        }      
+      }
       DynamicJsonBuffer jsonBuffer(10);
       JsonObject& jsonBufferRoot = jsonBuffer.createObject();
       jsonBufferRoot["message"] = MSG_INIT_TEST_QUANTITY;
@@ -267,10 +294,18 @@ void FeederModule::loop() {
     if (_manualForward) {
       _manualForward = false;
       long stepCount = MANUAL_STEP_COUNT - stepper.remaining();
+      sprintf(lastStatus, "%s: %s %ld ", NTP.getTimeDateString(now()).c_str(), MSG_LOG_MANUAL_DISPENSING, stepCount);
       stepper.stop();
       char message[40];
-      sprintf(message, "%s: %ld\n", MSG_DISPLAY_QTITY, stepCount);      
-      _oledDisplay->setLine(2, message, true, false, true);
+      // sprintf(message, "%s: %ld\n", MSG_DISPLAY_QTITY, stepCount);   
+      sprintf(message, "%s %02d:%02d, %s: %d\n", MSG_DISPLAY_AT, hour(), minute(), MSG_DISPLAY_QTITY, stepCount);
+   
+      _oledDisplay->setLine(2, message);
+      _oledDisplay->setLine(3, "");
+      if (mustWarnNoFoodDetected) {
+        mustWarnNoFoodDetected = false;
+        dispensingFailed(false);
+      }      
       DynamicJsonBuffer jsonBuffer(10);
       JsonObject& jsonBufferRoot = jsonBuffer.createObject();
       jsonBufferRoot["message"] = MSG_LOG_MANUAL_DISPENSING;
