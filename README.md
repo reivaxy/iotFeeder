@@ -1,6 +1,6 @@
 # iotFeeder
 
-Fish feeder using an ESP8266, a stepper motor and an oled screen.
+WiFi enabled fish feeder for aquarium, using an ESP8266, a stepper motor and an oled screen.
 
 All settings are done using web page forms over Wifi. It records activiy in a Firebase DB, and you will receive notifications when it's empty or offline.
 
@@ -15,8 +15,7 @@ I can't be held responsible for any damage occurring while using a device you bu
 If you do not agree with this disclaimer, do not build this device, or do not use it.
 ```
 
-
-One is being used on my small reef aquarium for 3 weeks without any issue, and I'm building 5 more to equip bigger aquariums.
+One is being used on my small reef aquarium for 3 weeks without any issue, I'm building 5 more to equip bigger aquariums and a friend is building one for his own aquarium.
 
 It will eventually be a module of the Iotinator framework (https://github.com/reivaxy/iotinator), but it can already work autonomously (no master module is needed).
 

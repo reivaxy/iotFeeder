@@ -12,6 +12,8 @@
 #define MSG_INIT_TEST_QUANTITY "One time dispensing"
 #define MSG_INIT_ILLEGAL_VALUE "Illegal value"
 #define MSG_INIT_DONE "Action done"
+#define MSG_INIT_LAST_ACTION "Last status:"
+#define MSG_INIT_CLOCK "Current time:"
 
 #define MSG_SETINGS_WELCOME "Settings"
 #define MSG_ALERT_DISPENSING_FAILURE "No food dispensed"
@@ -20,4 +22,7 @@
 #define MSG_LOG_MANUAL_REVERSE "Manual reverse activation"
 #define MSG_DISPLAY_AT "At"
 #define MSG_DISPLAY_QTITY "Qtity"
+#define MSG_DISPLAY_FAILED "FAILED"
+
+#define MSG_LOG_SCHEDULE_UPDATED "Schedule updated"
 
