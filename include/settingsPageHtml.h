@@ -1,5 +1,5 @@
 /**
- *  iotinator XIOT module settings page 
+ *  iotFeeder module settings page 
  *  Xavier Grosjean 2022
  *  Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
  */
@@ -13,15 +13,15 @@ static const char settingsBeginingPage[] PROGMEM = "\
 <meta charset='UTF-8'>\
 <meta name='viewport' content='width=device-width, initial-scale=1'>\
 <style>\
-body{line-height:1.5em}\
+body{line-height:1.5em;}\
 input{left:100px;position:absolute}\
 a{right:40px;position:absolute;text-decoration:none}\
 </style>\
 </head>\
 <body>\
 <h3>" MSG_SETINGS_WELCOME " %s <a href='/config'>⚙</a></h3>\
-<div>" MSG_INIT_CLOCK " %s</div>\
-<div>" MSG_INIT_LAST_ACTION " %s</div><hr>\
+<h6>" MSG_INIT_CLOCK " %s</br>\
+" MSG_INIT_LAST_ACTION " %s</h6><hr>\
 <form action='/feederApi/saveSettings' method='post'>\
 ";
 

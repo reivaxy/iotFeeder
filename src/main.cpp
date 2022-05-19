@@ -22,6 +22,7 @@ int reversePin = 16;
 int forwardPin = 15;
 
 void setup() {
+  char* stackStart;
   Serial.begin(115200);
   config = new FeederConfigClass((unsigned int)CONFIG_VERSION, (char*)MODULE_NAME);
   config->init();
@@ -29,6 +30,7 @@ void setup() {
   pinMode(0, OUTPUT); digitalWrite(0, HIGH);
   pinMode(2, OUTPUT); digitalWrite(2, HIGH);
   module = new FeederModule(config, 0x3C, sda, scl, forwardPin, reversePin);
+  module->setStackStart(&stackStart);
 }
 
 void loop() {
