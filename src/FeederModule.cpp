@@ -30,8 +30,8 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
   initMsgSchedule();
   _oledDisplay->setLineAlignment(1, TEXT_ALIGN_CENTER); 
   _oledDisplay->setLineAlignment(3, TEXT_ALIGN_CENTER);
-  _oledDisplay->setTransientDuration(2, 30000);  // Line to display step count at end of test session
-  _oledDisplay->setTransientDuration(3, 30000);  // Line to display possible dispensing failure (tank empty, clogged...)
+  _oledDisplay->setTransientDuration(2, 30000); 
+  _oledDisplay->setTransientDuration(3, 30000); 
   _server->on("/feederApi/saveSettings", HTTP_POST, [&]() {
     saveSettings();
   });
@@ -70,28 +70,27 @@ void FeederModule::initMsgSchedule() {
       strcat(messageSchedule, one);
     }
   }
+  Serial.print("Schedule: ");
   _oledDisplay->setLine(1, messageSchedule);
 }
 
 void FeederModule::settingsPage() {
   MemSize("before displaying settings page");
-  String pageTemplate(FPSTR(settingsBeginingPage));
-  String endingTemplate(FPSTR(settingsEndingPage));
-  String formTemplate(FPSTR(settingTemplate));
-  int maxSize = strlen(pageTemplate.c_str()) + strlen(_config->getName())  + strlen(NTP.getTimeDateString().c_str()) + strlen(lastStatus) 
-                                             + strlen(endingTemplate.c_str())+ PROGRAM_COUNT * (strlen(formTemplate.c_str()) + 20) + 50 ;  
-  Serial.printf("Size %d\n", maxSize);
+  int maxSize = strlen_P(settingsBeginingPage) + strlen(_config->getName())  + strlen(NTP.getTimeDateString().c_str()) + strlen(lastStatus) 
+                                             + strlen_P(settingsEndingPage)+ PROGRAM_COUNT * (strlen_P(settingTemplate) + 20) + 50 ;  
+  Debug("Setting page size %d\n", maxSize);
   char* result = (char*)malloc(maxSize);
-  sprintf(result, pageTemplate.c_str(), _config->getName(), NTP.getTimeDateString().c_str(), lastStatus);
+  sprintf_P(result, settingsBeginingPage, _config->getName(), NTP.getTimeDateString().c_str(), lastStatus);
   char *resultPtr = result + strlen(result);
   for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
     Program *prgm = _config->getProgram(p);
-    sprintf(resultPtr, formTemplate.c_str(), p, prgm->getHour(),
+    sprintf_P(resultPtr, settingTemplate, p, prgm->getHour(),
                                     p, prgm->getQuantity(),
                                     p, prgm->isActive()?"checked":"");
     resultPtr = result + strlen(result);
   }
-  strcat(result, endingTemplate.c_str());
+  strcat_P(result, settingsEndingPage);
+  Debug("Used setting page size %d\n", strlen(result));
   sendHtml(result, 200);
   free(result);
 
@@ -130,7 +129,8 @@ void FeederModule::saveSettings() {
     prgms[p] = prgm;
     //Serial.printf("p%d Hour %s Qtity %s Active %s\n", p, hour.c_str(), quantity.c_str(), active.c_str());
   }
-  std::sort(&prgms[0], &prgms[PROGRAM_COUNT], [](Program* a, Program* b) {
+  int n = sizeof(prgms) / sizeof(prgms[0]);
+  std::sort(prgms, prgms + n, [](Program* a, Program* b) {
     return a->getHour() < b->getHour();
   });
 
@@ -142,10 +142,9 @@ void FeederModule::saveSettings() {
     delete prgms[p];
   }
   _config->saveToEeprom();
-  MemSize("after saving settings");
   // Trying to send a message while processing an incoming request crashes the module
   // So we send it later
-  firebase->differMessage(MSG_LOG_SCHEDULE_UPDATED);
+  firebase->differLog(MSG_LOG_SCHEDULE_UPDATED);
   sendHtml(MSG_INIT_DONE, 200);
   initMsgSchedule();
   MemSize("end of saving settings");
@@ -246,15 +245,15 @@ void FeederModule::loop() {
 #endif    
     if (_manualReverse) {
       _manualReverse = false;
-      firebase->differMessage(MSG_LOG_MANUAL_REVERSE);
+      firebase->differLog(MSG_LOG_MANUAL_REVERSE);
     }
     if (_automaticDispensing) {
       _automaticDispensing = false;
-      DynamicJsonBuffer jsonBuffer(10);
+      DynamicJsonBuffer jsonBuffer(firebase->getBufferSize(2));
       JsonObject& jsonBufferRoot = jsonBuffer.createObject();
       jsonBufferRoot["message"] = MSG_LOG_AUTO_DISPENSING;
       jsonBufferRoot["quantity"] = lastDispensedQuantity;
-      firebase->differMessage(&jsonBufferRoot);
+      firebase->differLog(&jsonBufferRoot);
     }
 
     if (_oneTimeDispensing) {
@@ -273,11 +272,11 @@ void FeederModule::loop() {
           dispensingFailed(false);
         }      
       }
-      DynamicJsonBuffer jsonBuffer(10);
+      DynamicJsonBuffer jsonBuffer(firebase->getBufferSize(2));
       JsonObject& jsonBufferRoot = jsonBuffer.createObject();
       jsonBufferRoot["message"] = MSG_INIT_TEST_QUANTITY;
       jsonBufferRoot["quantity"] = lastDispensedQuantity;
-      firebase->differMessage(&jsonBufferRoot);
+      firebase->differLog(&jsonBufferRoot);
     }
 
     mustWarnNoFoodDetected = false;
@@ -309,11 +308,11 @@ void FeederModule::loop() {
         mustWarnNoFoodDetected = false;
         dispensingFailed(false);
       }      
-      DynamicJsonBuffer jsonBuffer(10);
+      DynamicJsonBuffer jsonBuffer(firebase->getBufferSize(2));
       JsonObject& jsonBufferRoot = jsonBuffer.createObject();
       jsonBufferRoot["message"] = MSG_LOG_MANUAL_DISPENSING;
       jsonBufferRoot["quantity"] = stepCount;
-      firebase->differMessage(&jsonBufferRoot);
+      firebase->differLog(&jsonBufferRoot);
     }
   }
 

@@ -22,7 +22,7 @@ int reversePin = 16;
 int forwardPin = 15;
 
 void setup() {
-  char* stackStart;
+  char stackStart;
   Serial.begin(115200);
   config = new FeederConfigClass((unsigned int)CONFIG_VERSION, (char*)MODULE_NAME);
   config->init();
