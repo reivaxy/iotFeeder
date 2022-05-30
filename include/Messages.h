@@ -6,7 +6,6 @@
  */
  
 #pragma once
-#include <XIOTMessages.h>
 
 #if XIOT_LANGUAGE == fr
 #include "Messages_fr.h"
