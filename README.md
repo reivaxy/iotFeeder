@@ -15,11 +15,15 @@ I can't be held responsible for any damage occurring while using a device you bu
 If you do not agree with this disclaimer, do not build this device, or do not use it.
 ```
 
-One is being used on my small reef aquarium for 3 weeks without any issue, I'm building 5 more to equip bigger aquariums and a friend is building one for his own aquarium.
+I've built 7 feeders with food IR detection (and one without), and a friend has built one.
+
+4 are currently installed on small to big recifal fish tanks (salted water, tropical fishes and corals), running with no issue since begining of May 2022 for 2 of them, and since mid July 2022 for two more.
 
 It will eventually be a module of the Iotinator framework (https://github.com/reivaxy/iotinator), but it can already work autonomously (no master module is needed).
 
-It connects to your home Wifi network to fetch time and post logs and alerts to Firebase (Google Cloud free account) as well as send push notifications when it detects that it's empty. Firebase will also send you push notifications when the module seems to be disconnected (power outage, ...)
+It connects to your home Wifi network to fetch date/time and posts logs and alerts to Firebase (Google Cloud free account) as well as send push notifications when it detects that it's empty. Firebase will also send you push notifications when the module seems to be disconnected (power outage, wifi outage...)
+
+It keeps working even if wifi goes out, but you'll get disconnection notifications.
 
 Notifications are sent using Pushover.net, using a one-time fee plan (about $5).
 
@@ -89,7 +93,13 @@ Other components easy to find anywhere:
 
 2 x push buttons (can be mounted on the [PCB](hardware/PCB) or wired)
 
-3 x 22k resistors (SMD 0806 if you use the [PCB](hardware/PCB))
+5 x 10kΩ to 22kΩ resistors (SMD 0806 if you use the [PCB](hardware/PCB))
+
+1 x 100Ω resistor (SMD 0806 if you use the [PCB](hardware/PCB))
+
+1 x 51Ω resistor (SMD 0806 if you use the [PCB](hardware/PCB))
+
+2 x 10µF capacitors (SMD 0806 if you use the [PCB](hardware/PCB))
 
 1 x 6V power unit. The module needs about 500mA at peak when stepper starts, 100mA when idle 
 
@@ -98,6 +108,7 @@ Other components easy to find anywhere:
 2 x 6800ZZ bearings
 
 2 hex bolts m3x16 to mount the stepper on the stepper plate
+
 
 8 Philips self tapping flat head screws m2x12 : 
 - 4 to attach the stepper plate to the case
