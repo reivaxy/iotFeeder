@@ -2,7 +2,7 @@
 
 WiFi enabled fish feeder for aquarium, using an ESP8266, a stepper motor and an oled screen.
 
-All settings are done using web page forms over Wifi. It records activiy in a Firebase DB, and you will receive notifications when it's empty or offline.
+All settings are done using web page forms over Wifi. It records activiyy in a Firebase DB, and you will receive notifications when it's empty or offline.
 
 ![proto](resources/proto400.jpg)
 ```
@@ -17,15 +17,20 @@ If you do not agree with this disclaimer, do not build this device, or do not us
 
 I've built 7 feeders with food IR detection (and one without), and a friend has built one.
 
-4 are currently installed on small to big recifal fish tanks (salted water, tropical fishes and corals), running with no issue since begining of May 2022 for 2 of them, and since mid July 2022 for two more.
+5 are currently installed on small to big recifal fish tanks (salted water, tropical fishes and corals), and one on freshwater tank, running with no issue since begining of May 2022 for 2 of them, and since mid July 2022 for three more.
 
 It will eventually be a module of the Iotinator framework (https://github.com/reivaxy/iotinator), but it can already work autonomously (no master module is needed).
 
 It connects to your home Wifi network to fetch date/time and posts logs and alerts to Firebase (Google Cloud free account) as well as send push notifications when it detects that it's empty. Firebase will also send you push notifications when the module seems to be disconnected (power outage, wifi outage...)
 
-It keeps working even if wifi goes out, but you'll get disconnection notifications.
+It keeps working even if wifi goes out, but you'll get disconnection notifications, thanks to a google cloud function checking for ping records every 5mn.
 
 Notifications are sent using Pushover.net, using a one-time fee plan (about $5).
+
+Logs and alerts are available on a google cloud application page:
+
+![logs](resources/logs.jpg)
+
 
 It's using cheap and widely available components (each under $4), a 3D printed case, and an optional but recommended PCB.
 
