@@ -1,8 +1,10 @@
 # iotFeeder
 
-WiFi enabled fish feeder for aquarium, using an ESP8266, a stepper motor and an oled screen.
+## WiFi enabled fish feeder for aquarium. Notifies when empty, power off, ...
 
-All settings are done using web page forms over Wifi. It records activiyy in a Firebase DB, and you will receive notifications when it's empty or offline.
+Main components: ESP8266, Oled screen, stepper motor, 3D printed Archimedes screw and case.
+
+All settings are done using embedded web page forms over Wifi. It records activiyy in a Firebase DB (Google Cloud), and you will receive notifications when it's empty or offline.
 
 ![proto](resources/proto400.jpg)
 ```
