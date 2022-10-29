@@ -1,5 +1,7 @@
 # iotFeeder
 
+Page in french or other languages: https://github-com.translate.goog/reivaxy/iotFeeder?_x_tr_sl=en&_x_tr_tl=fr&_x_tr_hl=fr
+
 ## WiFi enabled fish feeder for aquarium. Notifies when empty, power off, ...
 
 Main components: ESP8266, Oled screen, stepper motor, 3D printed Archimedes screw and case.
@@ -19,7 +21,7 @@ If you do not agree with this disclaimer, do not build this device, or do not us
 
 I've built 7 feeders with food IR detection (and one without), and a friend has built one.
 
-5 are currently installed on small to big recifal fish tanks (salted water, tropical fishes and corals), and one on freshwater tank, running with no issue since begining of May 2022 for 2 of them, and since mid July 2022 for three more.
+4 are currently installed on small to big recifal fish tanks (salted water, tropical fishes and corals), and three on freshwater tank, running with no issue since begining of May 2022 for 2 of them, and since mid July 2022 for the others.
 
 It will eventually be a module of the Iotinator framework (https://github.com/reivaxy/iotinator), but it can already work autonomously (no master module is needed).
 
@@ -27,7 +29,7 @@ It connects to your home Wifi network to fetch date/time and posts logs and aler
 
 It keeps working even if wifi goes out, but you'll get disconnection notifications, thanks to a google cloud function checking for ping records every 5mn.
 
-Notifications are sent using Pushover.net, using a one-time fee plan (about $5).
+Notifications are sent using Pushover.net, using a one-time-fee plan (about $5).
 
 Logs and alerts are available on a google cloud application page:
 
