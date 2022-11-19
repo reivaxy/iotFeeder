@@ -23,7 +23,9 @@ public:
   void feedOnce();
   void logProgramedDispensing(uint16_t quantity);
   void setCustomModuleRecordFields(JsonObject *jsonBufferRoot) override;
-  void dispensingFailed(boolean transientDisplay);
+  void dispensingFailed(bool transientDisplay);
+  
+  long checkQuantity();
   
   Stepper stepper;
   FeederConfigClass* _config;
@@ -38,11 +40,9 @@ public:
 
   bool _manualForward = false;
   bool _manualReverse = false;
-  bool _automaticDispensing = false;
-  bool _oneTimeDispensing = false;
+  bool _programRunning = false;
 
-  bool mustWarnNoFoodDetected = false;
-  int16_t lastDispensedQuantity = 0;
+  bool foodDetected = false;
 
   char lastStatus[MAX_STATUS_LENGTH + 1];
 
