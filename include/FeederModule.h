@@ -27,6 +27,9 @@ public:
   
   long checkQuantity();
   
+  char *customFormInitPage() override;
+  int customSaveConfig() override;
+
   Stepper stepper;
   FeederConfigClass* _config;
   unsigned long lastTriggerTime = 0;  

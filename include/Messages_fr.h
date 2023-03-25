@@ -14,6 +14,7 @@
 #define MSG_INIT_DONE "Action exécutée"
 #define MSG_INIT_LAST_ACTION "Dernière opération:"
 #define MSG_INIT_CLOCK "Date et heure:"
+#define MSG_INIT_IR_THRESHOLD "Seuil détection IR:"
 
 #define MSG_SETINGS_WELCOME "Réglages"
 #define MSG_ALERT_DISPENSING_FAILURE "Nourriture non distribuée"

@@ -30,6 +30,9 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
   lastTriggerTime = 0;
   stepper = Stepper();
   initMsgSchedule();
+  Serial.print("IR Threshold: ");
+  Serial.println(_config->getIrThreshold());
+
   _oledDisplay->setLineAlignment(1, TEXT_ALIGN_CENTER); 
   _oledDisplay->setLineAlignment(3, TEXT_ALIGN_CENTER);
   _oledDisplay->setTransientDuration(2, 30000); 
@@ -168,6 +171,21 @@ void FeederModule::dispensingFailed(bool transientDisplay) {
     sendPushNotif(_config->getName(), MSG_ALERT_DISPENSING_FAILURE);
 }
 
+char *FeederModule::customFormInitPage() {
+  char input[150];
+  sprintf(input, "%s <br/><input name='irThreshold' type='number' min='0' max='100' value='%d'/><br/>", MSG_INIT_IR_THRESHOLD, _config->getIrThreshold());
+  return(XUtils::mallocAndCopy(input));
+}
+
+int FeederModule::customSaveConfig() {
+    String irThresholdStr = _server->arg("irThreshold");
+    if (irThresholdStr.length() > 0) {
+      uint8_t irThreshold = (uint8_t)irThresholdStr.toInt();
+      Debug("Setting irThreshold to %d\n", irThreshold);
+      _config->setIrThreshold(irThreshold);
+    }
+}
+
 void FeederModule::loop() {
   XIOTModule::loop();  // takes care of server, display, ...
 
@@ -217,9 +235,9 @@ void FeederModule::loop() {
       // We don't check IR on backwards runs, or if device not equipped with IR sensor
       if (stepper.shouldCheckIR()) {
         int level = analogRead(IR_IN)/10;                                                                                                                   
-        if (abs(_previousLevel - level) > 3) {
-          if (_previousLevel != -1 && isTimeInitialized()) {
-            Serial.printf("%s IR Detection ! %d\n", NTP.getTimeDateString(now()).c_str(),  level);    
+        if (abs(_previousLevel - level) > _config->getIrThreshold()) {
+          if (_previousLevel != -1) {
+            //Serial.printf("%s IR Detection ! %d\n", NTP.getTimeDateString(now()).c_str(),  level);    
             foodDetected = true;
           }
         }
