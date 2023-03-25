@@ -30,8 +30,7 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
   lastTriggerTime = 0;
   stepper = Stepper();
   initMsgSchedule();
-  Serial.print("IR Threshold: ");
-  Serial.println(_config->getIrThreshold());
+  Debug("IR Threshold: %d\n", _config->getIrThreshold());
 
   _oledDisplay->setLineAlignment(1, TEXT_ALIGN_CENTER); 
   _oledDisplay->setLineAlignment(3, TEXT_ALIGN_CENTER);
@@ -73,7 +72,6 @@ void FeederModule::initMsgSchedule() {
       strcat(messageSchedule, one);
     }
   }
-  Serial.print("Schedule: ");
   _oledDisplay->setLine(1, messageSchedule);
 }
 
@@ -162,7 +160,7 @@ void FeederModule::setCustomModuleRecordFields(JsonObject *jsonBufferRoot) {
 }
 
 void FeederModule::dispensingFailed(bool transientDisplay) {
-    Serial.printf("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str()); 
+    Debug("%s WARNING NO FOOD DETECTED\n", NTP.getTimeDateString(now()).c_str()); 
     _oledDisplay->setLine(3, MSG_DISPLAY_FAILED, transientDisplay, false, true);
     strcat(lastStatus, ": ");
     strcat(lastStatus, MSG_ALERT_DISPENSING_FAILURE);
@@ -196,10 +194,10 @@ void FeederModule::loop() {
   }
   if (quantity != 0) {
     sprintf(lastStatus, "%s: %s %d ", NTP.getTimeDateString(now()).c_str(), MSG_LOG_AUTO_DISPENSING, quantity);
-    Serial.printf("%s\n", NTP.getTimeDateString(now()).c_str());
+    Debug("%s\n", NTP.getTimeDateString(now()).c_str());
     char message[50];
     sprintf(message, "%s %02d:%02d, %s: %d\n", MSG_DISPLAY_AT, (uint8_t)hour(), (uint8_t)minute(), MSG_DISPLAY_QTITY, quantity);
-    Serial.printf(message);
+    Debug(message);
     _oledDisplay->setLine(2, message);
     _oledDisplay->setLine(3, "");
     lastTriggerTime = millis();
@@ -219,7 +217,7 @@ void FeederModule::loop() {
   
   // Re enable programs after some delay since last program triggered and disabled itself
   if (lastTriggerTime != 0 && XUtils::isElapsedDelay(millis(), &lastTriggerTime, RESET_DELAY_MS)) {
-    Serial.println("Re-enabling programs");
+    Debug("Re-enabling programs");
     for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
       _config->getProgram(p)->reEnable();     
     }
@@ -373,6 +371,7 @@ long FeederModule::checkQuantity() {
         }
       }
     }
+  }
   #endif
 
   return quantity;
