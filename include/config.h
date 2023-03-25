@@ -19,6 +19,7 @@
 // Add specific config fields to the generic module config structure
 struct FeederConfigStruct:ModuleConfigStruct {
   FeederProgram programs[PROGRAM_COUNT];
+  uint8_t irThreshold;
 };
 
 
@@ -29,6 +30,8 @@ public:
   const char* getDefaultUIClassName() override;
   void saveProgram(Program *program, uint8_t offset);
   Program* getProgram(uint8_t offset);
+  uint8_t getIrThreshold();
+  void setIrThreshold(uint8_t);
 
 protected:
   FeederConfigStruct* _getDataPtr(void);  
