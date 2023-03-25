@@ -14,6 +14,7 @@
 #define MSG_INIT_DONE "Action done"
 #define MSG_INIT_LAST_ACTION "Last status:"
 #define MSG_INIT_CLOCK "Current time:"
+#define MSG_INIT_IR_THRESHOLD "IR Threshold:"
 
 #define MSG_SETINGS_WELCOME "Settings"
 #define MSG_ALERT_DISPENSING_FAILURE "No food dispensed"

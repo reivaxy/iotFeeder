@@ -27,7 +27,9 @@ void FeederConfigClass::initFromDefault() {
     fp->hour = 0;
     fp->quantity = 0;
     Serial.printf("fp config init default 2 - %d hour:%d\n", p, fp->hour);
+
   }
+  _getDataPtr()->irThreshold = 3;
   saveToEeprom();
 }
 
@@ -38,6 +40,13 @@ const char* FeederConfigClass::getDefaultUIClassName() {
 
 Program* FeederConfigClass::getProgram(uint8_t offset) {
   return _programs[offset];
+}
+
+uint8_t FeederConfigClass::getIrThreshold() {
+  return _getDataPtr()->irThreshold;
+}
+void FeederConfigClass::setIrThreshold(uint8_t t) {
+  _getDataPtr()->irThreshold = t;
 }
 
 /**
