@@ -340,16 +340,18 @@ long FeederModule::checkQuantity() {
   Debug("%s: Check quantity\n", NTP.getTimeDateString(now()).c_str());
   long quantity = 0;
   int mi = minute();
+  // when in test, return non null quantity every X mn where
+  // X is either the value of PRGM_TEST or 5 if PRGM_TEST is 0
 #ifdef PRGM_TEST
   if (!isTimeInitialized()) {
     return 0;
   }
-  int div = 5;
+  int testPeriod = 5;
   if (PRGM_TEST > 0) {
-    div = PRGM_TEST;
+    testPeriod = PRGM_TEST;
   }
-  Debug("%s: Check quantity debug mode every %dmn\n", NTP.getTimeDateString(now()).c_str(), div);
-  int remainder = mi % div;
+  Debug("%s: Check quantity debug mode,  every %dmn\n", NTP.getTimeDateString(now()).c_str(), testPeriod);
+  int remainder = mi % testPeriod;
   if (remainder == 0) {
     quantity = 500;
   }

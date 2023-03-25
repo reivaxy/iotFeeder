@@ -11,13 +11,13 @@
 
 class StepperRun {
 public:
-   StepperRun(AccelStepper stepper, long stepCount, bool checkIR, bool programmedRun);
+   StepperRun(AccelStepper *stepper, long stepCount, bool checkIR, bool programmedRun);
 
    long _stepCount = 0;
    bool _checkIR = false;  // IR should not be checked on reverse rotation, or non IR enabled device
    bool _programmedRun = false;  // This run was triggered by feeder program
 
-   AccelStepper _stepper;
+   AccelStepper *_stepper;
    bool _running = false;
    bool _done = false;
    bool _firstStep = true;
