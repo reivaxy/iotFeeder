@@ -104,7 +104,7 @@ bool Stepper::refresh() {
 }
 
 int Stepper::addRun(int count, bool checkIR, bool automaticRun) {
-   StepperRun* sr = new StepperRun(stepper, count, checkIR, automaticRun);
+   StepperRun* sr = new StepperRun(&stepper, count, checkIR, automaticRun);
    uint offset = 0;
    while(offset < MAX_RUN_COUNT) {
       if (runs[offset] == NULL) {
