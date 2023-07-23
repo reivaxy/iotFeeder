@@ -43,13 +43,13 @@ bool StepperRun::isProgrammedRun() {
 }
 
 long StepperRun::stop() {
-   long remainingSteps = interrupt(); // can be stopped before the end
+   long remainingSteps = cancel(); // can be stopped before the end
    _done = true;
    _running = false;
    return remainingSteps;   
 }
 
-long StepperRun::interrupt() {
+long StepperRun::cancel() {
    long remainingSteps = _stepper->distanceToGo(); // can be stopped before the end
    Debug("Stopping run of %ld steps after %ld steps, checkIR: %s\n", _stepCount, _stepCount - remainingSteps, _checkIR?"true":"false");
    _stepper->stop();

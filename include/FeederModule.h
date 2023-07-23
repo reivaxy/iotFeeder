@@ -20,6 +20,12 @@ static const char HOUR_FORMAT[] PROGMEM = "%02d ";
 static const char LAST_STATUS_FORMAT[] PROGMEM = "%s: %s %ld ";
 static const char DISPENSING_DISPLAY_FORMAT[] PROGMEM = "%s %02d:%02d, %s: %ld\n";
 
+static const char PATH_SAVE_SETTINGS[] PROGMEM = "/feederApi/saveSettings";
+static const char PATH_FEED_ONCE[] PROGMEM = "/feederApi/feedOnce";
+
+static const char SERVER_ARG_QUANTITY[] PROGMEM = "test_qtity";
+
+
 static const char CUSTOM_FORM_INIT_PAGE_FORMAT[] PROGMEM = "%s <br/><input name='irThreshold' type='number' min='0' max='100' value='%d'/><br/>";
 
 class FeederModule:public XIOTModule {

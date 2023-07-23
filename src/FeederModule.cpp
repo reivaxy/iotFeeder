@@ -6,10 +6,7 @@
  
 #include "FeederModule.h"
 
-#define HOUR_PARAM_NAME "p_h_%d"
-#define QUANTITY_PARAM_NAME "p_q_%d"
-#define ACTIVE_PARAM_NAME "p_a_%d"
- 
+
 #define REVERSE_STEP_COUNT 40
 
 #define MANUAL_STEP_COUNT 10000
@@ -49,7 +46,7 @@ FeederModule::FeederModule(FeederConfigClass* config, int displayAddr, int displ
 }
 
 void FeederModule::feedOnce() {
-  String quantity = _server->arg("test_qtity");
+  String quantity = getServerArg(FPSTR(SERVER_ARG_QUANTITY));
   int16_t qtity = quantity.toInt();
   if (qtity < -100 || qtity > 5000) {    
     sendHtml(MSG_INIT_ILLEGAL_VALUE, 200);
@@ -68,7 +65,7 @@ void FeederModule::initMsgSchedule() {
   for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) {
     Program *prgm = _config->getProgram(p);
     if (prgm->isActive()) {
-      sprintf(one, "%02d ", prgm->getHour());
+      sprintf_P(one, HOUR_FORMAT, prgm->getHour());
       strcat(messageSchedule, one);
     }
   }
@@ -113,9 +110,9 @@ void FeederModule::saveSettings() {
   Program *prgms[PROGRAM_COUNT];
   FeederProgram fprgms[PROGRAM_COUNT];
   for (uint8_t p = 0; p < PROGRAM_COUNT; p ++) { 
-    sprintf(hourParamName, HOUR_PARAM_NAME, p);
-    sprintf(quantityParamName, QUANTITY_PARAM_NAME, p);
-    sprintf(activeParamName, ACTIVE_PARAM_NAME, p);
+    sprintf_P(hourParamName, HOUR_PARAM_NAME_FORMAT, p);
+    sprintf_P(quantityParamName, QUANTITY_PARAM_NAME_FORMAT, p);
+    sprintf_P(activeParamName, ACTIVE_PARAM_NAME_FORMAT, p);
     String hour = _server->arg(hourParamName);
     String quantity = _server->arg(quantityParamName);
     String active = _server->arg(activeParamName);
@@ -171,7 +168,7 @@ void FeederModule::dispensingFailed(bool transientDisplay) {
 
 char *FeederModule::customFormInitPage() {
   char input[150];
-  sprintf(input, "%s <br/><input name='irThreshold' type='number' min='0' max='100' value='%d'/><br/>", MSG_INIT_IR_THRESHOLD, _config->getIrThreshold());
+  sprintf_P(input, CUSTOM_FORM_INIT_PAGE_FORMAT, MSG_INIT_IR_THRESHOLD, _config->getIrThreshold());
   return(XUtils::mallocAndCopy(input));
 }
 
@@ -182,6 +179,7 @@ int FeederModule::customSaveConfig() {
       Debug("Setting irThreshold to %d\n", irThreshold);
       _config->setIrThreshold(irThreshold);
     }
+    return 200;
 }
 
 void FeederModule::loop() {
@@ -193,10 +191,10 @@ void FeederModule::loop() {
     quantity = checkQuantity();
   }
   if (quantity != 0) {
-    sprintf(lastStatus, "%s: %s %d ", NTP.getTimeDateString(now()).c_str(), MSG_LOG_AUTO_DISPENSING, quantity);
+    sprintf_P(lastStatus, LAST_STATUS_FORMAT, NTP.getTimeDateString(now()).c_str(), MSG_LOG_AUTO_DISPENSING, (long)quantity);
     Debug("%s\n", NTP.getTimeDateString(now()).c_str());
     char message[50];
-    sprintf(message, "%s %02d:%02d, %s: %d\n", MSG_DISPLAY_AT, (uint8_t)hour(), (uint8_t)minute(), MSG_DISPLAY_QTITY, quantity);
+    sprintf_P(message, DISPENSING_DISPLAY_FORMAT, MSG_DISPLAY_AT, (uint8_t)hour(), (uint8_t)minute(), MSG_DISPLAY_QTITY, (long)quantity);
     Debug(message);
     _oledDisplay->setLine(2, message);
     _oledDisplay->setLine(3, "");
@@ -269,9 +267,9 @@ void FeederModule::loop() {
           // This features also allows to go backward by providing a negative quantity on the webpage.
           // we don't want to display nor warn 
           if (stepper.currentQuantity() > 0) {
-            sprintf(lastStatus, "%s: %s %ld ", NTP.getTimeDateString(now()).c_str(), MSG_INIT_TEST_QUANTITY, stepper.currentQuantity());
+            sprintf_P(lastStatus, LAST_STATUS_FORMAT, NTP.getTimeDateString(now()).c_str(), MSG_INIT_TEST_QUANTITY, stepper.currentQuantity());
             char message[40];
-            sprintf(message, "%s %02d:%02d, %s: %ld\n", MSG_DISPLAY_AT, hour(), minute(), MSG_DISPLAY_QTITY, stepper.currentQuantity());
+            sprintf_P(message, DISPENSING_DISPLAY_FORMAT, MSG_DISPLAY_AT, hour(), minute(), MSG_DISPLAY_QTITY, stepper.currentQuantity());
 
             _oledDisplay->setLine(2, message);
             _oledDisplay->setLine(3, "");
@@ -304,10 +302,9 @@ void FeederModule::loop() {
       _manualForward = false;
       long remainingSteps = stepper.interrupt();
       long stepCount = MANUAL_STEP_COUNT - remainingSteps;
-      sprintf(lastStatus, "%s: %s %ld ", NTP.getTimeDateString(now()).c_str(), MSG_LOG_MANUAL_DISPENSING, stepCount);
+      sprintf_P(lastStatus, LAST_STATUS_FORMAT, NTP.getTimeDateString(now()).c_str(), MSG_LOG_MANUAL_DISPENSING, stepCount);
       char message[40];
-      // sprintf(message, "%s: %ld\n", MSG_DISPLAY_QTITY, stepCount);   
-      sprintf(message, "%s %02d:%02d, %s: %ld\n", MSG_DISPLAY_AT, hour(), minute(), MSG_DISPLAY_QTITY, stepCount);
+      sprintf_P(message, DISPENSING_DISPLAY_FORMAT, MSG_DISPLAY_AT, hour(), minute(), MSG_DISPLAY_QTITY, stepCount);
    
       _oledDisplay->setLine(2, message);
       _oledDisplay->setLine(3, "");

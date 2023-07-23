@@ -29,8 +29,9 @@ public:
    bool isProgrammedRun();
    long stop();
    void start();
-   long interrupt();
    long refresh();
    long getStepCount();
 
+private:
+   long cancel();
 };

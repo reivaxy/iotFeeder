@@ -45,7 +45,7 @@ long Stepper::stop() {
 long Stepper::interrupt() {
    long remainingSteps = 0;
    if (currentRun != NULL) {
-      remainingSteps = currentRun->interrupt();
+      remainingSteps = currentRun->stop();
    }
    return remainingSteps;
 }
