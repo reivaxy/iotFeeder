@@ -89,8 +89,7 @@ I've used this stepper, so the case is designed to accomodate it, but since it's
 
 <img src="https://github.com/reivaxy/iotFeeder/blob/master/resources/stepper.jpg?raw=true" width="200px"/>
 
-https://www.ebay.com/itm/262537288016
-
+December 2023 edit: the ebay link I provided is no longer showing this stepper which may now be difficult to find :( 
 
 Other components easy to find anywhere:
 
